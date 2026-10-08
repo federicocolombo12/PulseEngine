@@ -29,3 +29,6 @@
 
 # Crashlytics
 crashlytics-build.properties
+
+.obsidian/
+Documentation~/.obsidian/

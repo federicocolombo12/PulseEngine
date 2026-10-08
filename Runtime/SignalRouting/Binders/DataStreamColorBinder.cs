@@ -119,7 +119,10 @@ namespace GenericDataStreaming
 
             if (cachedVfx != null)
             {
-                cachedVfx.SetVector4(targetPropertyName, mappedColor);
+                if (cachedVfx.HasVector4(targetPropertyName))
+                {
+                    cachedVfx.SetVector4(targetPropertyName, mappedColor);
+                }
             }
             else if (cachedMaterial != null)
             {

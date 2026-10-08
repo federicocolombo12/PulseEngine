@@ -177,7 +177,14 @@ namespace GenericDataStreaming
 
             if (cachedVfx != null)
             {
-                cachedVfx.SetFloat(targetPropertyName, val);
+                if (cachedVfx.HasFloat(targetPropertyName))
+                {
+                    cachedVfx.SetFloat(targetPropertyName, val);
+                }
+                else if (cachedVfx.HasInt(targetPropertyName))
+                {
+                    cachedVfx.SetInt(targetPropertyName, Mathf.RoundToInt(val));
+                }
             }
             else if (cachedMaterial != null)
             {

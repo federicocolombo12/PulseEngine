@@ -102,11 +102,13 @@ namespace MedicalXR.EditorScripts
             turbulenceBinder.targetComponent = vfxComponent;
             turbulenceBinder.targetPropertyName = "TurbulenceIntensity";
             
-            // Binder for SpO2
+            // Binder for SpO2 (modulates ParticleScale on VFX)
             var spo2Binder = vfxGo.AddComponent<DataStreamPropertyBinder>();
             spo2Binder.channelId = "spo2";
             spo2Binder.targetComponent = vfxComponent;
-            spo2Binder.targetPropertyName = "SpO2";
+            spo2Binder.targetPropertyName = "ParticleScale";
+            spo2Binder.useLocalRemap = true;
+            spo2Binder.localRemap = new Vector2(0.4f, 1.5f);
 
             // 7. Create Canvas UI
             GameObject canvasGo = new GameObject("Welcome_Canvas");

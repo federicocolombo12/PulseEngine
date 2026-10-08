@@ -134,16 +134,7 @@ namespace MedicalXR.RayMarching
                     so.ApplyModifiedPropertiesWithoutUndo();
                 }
 #endif
-                if (cachedRenderer.sharedMaterial == null)
-                {
-#if UNITY_EDITOR
-                    var mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/_Core/RayMarching/Material/BioSignalSDF_Mat.mat");
-                    if (mat != null) cachedRenderer.sharedMaterial = mat;
-#endif
-                }
-
-                // In Play Mode creiamo un'istanza locale. In Edit Mode usiamo sharedMaterial.
-                targetMaterial = Application.isPlaying ? cachedRenderer.material : cachedRenderer.sharedMaterial;
+                EnsureMaterial();
                 cachedRenderer.enabled = renderSolidMesh;
             }
             else
@@ -164,6 +155,58 @@ namespace MedicalXR.RayMarching
             }
             
             EnsureDummyTexture();
+        }
+
+        void OnValidate()
+        {
+            if (renderSolidMesh)
+            {
+                EnsureMaterial();
+            }
+        }
+
+        public void EnsureMaterial()
+        {
+            if (cachedRenderer == null) cachedRenderer = GetComponent<Renderer>();
+            if (cachedRenderer == null) return;
+
+            bool isBroken = cachedRenderer.sharedMaterial == null || 
+                            cachedRenderer.sharedMaterial.shader == null || 
+                            cachedRenderer.sharedMaterial.shader.name == "Hidden/InternalErrorShader";
+
+            if (isBroken)
+            {
+#if UNITY_EDITOR
+                var mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Packages/com.federicocolombo.pulseengine/Runtime/VolumetricSDF/Materials/BioSignalSDF_Mat.mat");
+                if (mat == null)
+                {
+                    mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/_Core/RayMarching/Material/BioSignalSDF_Mat.mat");
+                }
+                if (mat != null)
+                {
+                    cachedRenderer.sharedMaterial = mat;
+                }
+                else
+                {
+                    var shader = Shader.Find("MedicalXR/BioSignalSDF");
+                    if (shader != null)
+                    {
+                        cachedRenderer.sharedMaterial = new Material(shader) { name = "BioSignalSDF_RuntimeMat" };
+                    }
+                }
+#else
+                var shader = Shader.Find("MedicalXR/BioSignalSDF");
+                if (shader != null)
+                {
+                    cachedRenderer.sharedMaterial = new Material(shader) { name = "BioSignalSDF_RuntimeMat" };
+                }
+#endif
+            }
+
+            if (targetMaterial == null || targetMaterial.shader == null || targetMaterial.shader.name == "Hidden/InternalErrorShader")
+            {
+                targetMaterial = Application.isPlaying ? cachedRenderer.material : cachedRenderer.sharedMaterial;
+            }
         }
 
         private void EnsureDummyTexture()
@@ -324,9 +367,9 @@ namespace MedicalXR.RayMarching
                 {
                     cachedRenderer.enabled = renderSolidMesh;
                 }
-                if (targetMaterial == null)
+                if (renderSolidMesh && (targetMaterial == null || cachedRenderer.sharedMaterial == null))
                 {
-                    targetMaterial = Application.isPlaying ? cachedRenderer.material : cachedRenderer.sharedMaterial;
+                    EnsureMaterial();
                 }
             }
 

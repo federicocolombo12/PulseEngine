@@ -54,7 +54,10 @@ namespace MedicalXR.EditorScripts
             // 4. Create SDF Infrastructure
             GameObject sdfGo = new GameObject("SDF_Volume");
             sdfGo.AddComponent<MeshFilter>();
-            sdfGo.AddComponent<MeshRenderer>();
+            var mr = sdfGo.AddComponent<MeshRenderer>();
+            var mat = AssetDatabase.LoadAssetAtPath<Material>("Packages/com.federicocolombo.pulseengine/Runtime/VolumetricSDF/Materials/BioSignalSDF_Mat.mat");
+            if (mat == null) mat = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Core/RayMarching/Material/BioSignalSDF_Mat.mat");
+            if (mat != null) mr.sharedMaterial = mat;
             var sdfController = sdfGo.AddComponent<MedicalXR.RayMarching.SdfGroupController>();
             
             // Add component but disable it first to prevent premature OnEnable execution

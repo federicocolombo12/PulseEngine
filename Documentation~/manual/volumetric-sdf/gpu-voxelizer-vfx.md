@@ -27,6 +27,11 @@ graph LR
     Tex3D -->|Sample Distance & Color| VFX
 ```
 
+<p align="center">
+  <img src="../../images/vfx_swarm_adhesion.gif" width="75%" alt="GPU Particle Swarm Adhesion to Volumetric SDF" />
+  <br><em>VFX Graph particles conforming and advecting dynamically over real-time CSG distance volume.</em>
+</p>
+
 1. **Parameter Packing**: On every frame, `SdfVolumeVoxelizer.cs` serializes active transforms, CSG modes, and blend values into structured GPU constant buffers (`_NodeParams`, `_NodeColors`, `_NodeMatrices`).
 2. **Compute Dispatch**: `SdfVolumeVoxelizer.compute` executes a 3D thread group grid ($8 \times 8 \times 8$ threads per group) over the target resolution (typically $32^3$, $64^3$, or $128^3$).
 3. **Texture Generation**: Every voxel evaluates the complete CSG field and writes an `RGBAHalf` float value:

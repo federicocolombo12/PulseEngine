@@ -58,18 +58,21 @@ $$\text{SmoothSub}(d_1, d_2, k) = \text{lerp}(d_1, -d_2, h) + k \cdot h \cdot (1
 $$h = \text{clamp}\left(0.5 - 0.5 \cdot \frac{d_1 - d_2}{k}, 0.0, 1.0\right)$$
 $$\text{SmoothInt}(d_1, d_2, k) = \text{lerp}(d_1, d_2, h) + k \cdot h \cdot (1.0 - h)$$
 
-```mermaid
-graph TD
-    A[Sphere 1: d1] --> C[Inigo Quilez Smooth Union Engine]
-    B[Sphere 2: d2] --> C
-    K[blendSoftness k: 0.35] --> C
-    C --> D[Organic Melting Metaball Result]
-```
+<p align="center">
+  <img src="../../images/csg_modeling_demo.gif" width="70%" alt="CSG Procedural Modeling in Scene View" />
+  <br><em>Interactive CSG smooth union and subtraction executed live inside Unity Scene View.</em>
+</p>
 
 ---
 
-## 4. Inspector Reference: `SdfNode`
+## 4. Inspector Reference: `SdfGroupController` & `SdfNode`
 
+<p align="center">
+  <img src="../../images/sdf_group_controller_inspector.png" width="48%" alt="SdfGroupController Inspector" />
+  <img src="../../images/sdf_node_inspector.png" width="48%" alt="SdfNode Inspector" />
+</p>
+
+### `SdfNode` Properties
 Each primitive in the scene is governed by an `SdfNode` component:
 
 | Property | Type | Default | Description |

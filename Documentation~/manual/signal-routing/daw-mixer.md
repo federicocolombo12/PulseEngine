@@ -13,34 +13,27 @@ Window > PulseEngine > DAW Mixer
 
 ---
 
-## Console Layout & Sections
+## Console Overview
+<p align="center">
+  <img src="../../images/daw_mixer_full.png" width="100%" alt="PulseEngine Virtual DAW Mixer Window" />
+</p>
 
-```text
-+-------------------------------------------------------------------------------------------------+
-|  [PULSE ENGINE]  ● IN SCENA: PRESET [Default]  [◀] [▶]  [+ Nuovo]  [💾 Salva]                   |
-+-------------------------------------------------------------------------------------------------+
-|  [⚡ SIMULATORE]  [📡 OSC]  [🌐 WEBSOCKET]  [🔌 SERIAL]      |      [⚡ BENCHMARK]   [❓ GUIDA]  |
-+-------------------------------------------------------------------------------------------------+
-|  ▼ 🔍 INBOUND SIGNAL SNIFFER & AUTO-DISCOVERY                                                  |
-|    🟢 heart_rate (125 Hz) [MAPPED]   |   🟡 gyro_z (50 Hz) [UNMAPPED] [+ Crea]                 |
-+-------------------------------------------------------------------------------------------------+
-|  +--------------------+  +--------------------+  +--------------------+  +--------------------+ |
-|  | CH: heart_rate     |  | CH: spo2           |  | CH: hrv_rmssd      |  | CH: perf_index     | |
-|  | [OSCILLOSCOPE]     |  | [OSCILLOSCOPE]     |  | [OSCILLOSCOPE]     |  | [OSCILLOSCOPE]     | |
-|  | Raw: 72.4 BPM      |  | Raw: 98.2 %        |  | Raw: 68.1 ms       |  | Raw: 5.4 %         | |
-|  | [VU METER: 62%]    |  | [VU METER: 92%]    |  | [VU METER: 78%]    |  | [VU METER: 45%]    | |
-|  | Min [40]  Max [160]|  | Min [80]  Max [100]|  | Min [10]  Max [100]|  | Min [0.5] Max [10] | |
-|  | Smooth: [0.15s]    |  | Smooth: [0.30s]    |  | Smooth: [0.20s]    |  | Smooth: [0.10s]    | |
-|  | [ FADER SLIDER ]   |  | [ FADER SLIDER ]   |  | [ FADER SLIDER ]   |  | [ FADER SLIDER ]   | |
-|  | [M] Mute  [S] Solo |  | [M] Mute  [S] Solo |  | [M] Mute  [S] Solo |  | [M] Mute  [S] Solo | |
-|  | ▼ Binders (2)      |  | ▼ Binders (1)      |  | ▼ Binders (1)      |  | ▼ Binders (0)      | |
-|  +--------------------+  +--------------------+  +--------------------+  +--------------------+ |
-+-------------------------------------------------------------------------------------------------+
-```
+The DAW Mixer console is divided into five specialized zones:
+1. **Master Console & Hardware Routing**: Top bar with Preset snapshot manager, Protocol selection, and quick links.
+2. **Clinical Simulator Scenario Bar**: Real-time sliders for simulated cardiac rate, SpO2, and autonomic HRV.
+3. **Inbound Signal Sniffer & Auto-Discovery Matrix**: Live telemetry traffic table with activity LEDs, observed bounds $[Min, Max]$, and auto-provision buttons.
+4. **Vertical Channel Strips**: Individual channel strips with oscilloscopes, trim normalization, smoothing, and amplitude faders.
+5. **FX Inserts & Trigger Rack**: Math modifiers, metronome anti-jitter conditioning, and reflection output binders.
 
 ---
 
-## 1. Master Top Bar & Preset Management
+## Channel Strip Architecture
+
+<p align="center">
+  <img src="../../images/daw_channel_strip.png" width="340px" alt="Single Channel Strip Closeup" />
+</p>
+
+Each telemetry channel in the mixer possesses a dedicated vertical strip providing complete control over normalization, filtering, and destination mapping:
 
 Located at the top of the window, this bar remains pinned regardless of vertical scrolling:
 

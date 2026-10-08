@@ -21,36 +21,10 @@ Built following professional audio production paradigms, it provides a **Virtual
 2. **GPU Particle Swarms (VFX Graph)**: Asynchronous 3D texture voxelization via Compute Shaders, allowing millions of particles to adhere, collide, and swirl around dynamic implicit shapes.
 3. **Clinical & Creative Biofeedback**: Flagship medical XR templates translating heart rate (BPM), blood oxygenation (SpO2), and autonomic stress (HRV RMSSD) into visceral perceptual metaphors.
 
-```mermaid
-graph LR
-    subgraph Signal Ingestion
-        A[📡 OSC / UDP]
-        B[🌐 WebSockets]
-        C[🔌 Serial COM]
-        D[⚡ Internal Sim]
-    end
-
-    subgraph PulseEngine Console
-        E[DataStreamRegistry]
-        F[DAW Mixer Window]
-        G[Anti-Jitter Metronome]
-        H[Reflection Binders]
-    end
-
-    subgraph Visual Engine
-        I[URP Raymarching Shader]
-        J[Compute 3D Voxelizer]
-        K[Unity VFX Graph]
-    end
-
-    SignalIngestion --> E
-    E --> F
-    F --> G
-    G --> H
-    H --> I
-    H --> J
-    J --> K
-```
+<p align="center">
+  <img src="Documentation~/images/csg_modeling_demo.gif" width="48%" alt="CSG Procedural Modeling" />
+  <img src="Documentation~/images/vfx_swarm_adhesion.gif" width="48%" alt="VFX Swarm Adhesion" />
+</p>
 
 ---
 
@@ -61,6 +35,10 @@ graph LR
 * **Engine-Level Mute [M] & Solo [S]**: Silences signal modulation and automatically restores restful baselines without disrupting network ingestion.
 * **Inbound Signal Sniffer & Auto-Discovery**: Automatically listens to incoming telemetry, discovers unmapped keys, and configures calibrated channels with a single click.
 * **1-Click Preset Snapshots**: Save, hot-swap, and overwrite complete system states (channels, faders, node hierarchies, materials, gradients) as ScriptableObjects.
+
+<p align="center">
+  <img src="Documentation~/images/daw_mixer_full.png" width="100%" alt="PulseEngine Virtual DAW Mixer Console" />
+</p>
 
 ### 🧬 2. Volumetric SDF Engine
 * **Order-Independent CSG**: Smooth Union, Smooth Subtraction, and Smooth Intersection with per-node blend softness.

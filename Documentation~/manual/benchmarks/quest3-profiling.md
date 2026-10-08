@@ -20,9 +20,14 @@ The `MedicalXRBenchmarkRunner` executes a rigorous 13-stage profiling routine:
 
 ---
 
-## 2. Empirical Benchmark Results (Meta Quest 3 Standalone)
+## 2. Empirical Benchmark Results (Automated Suite Execution)
 
-Testing was conducted natively on **Meta Quest 3 (Snapdragon XR2 Gen 2)** running Android OpenXR in standalone mode:
+<p align="center">
+  <img src="../../images/daw_benchmark_results_table.png" width="100%" alt="Automated Benchmark Execution Results Table" />
+  <br><em>Execution results from the DAW Mixer Benchmark runner across 13 test conditions verifying 72Hz/90Hz XR constraints.</em>
+</p>
+
+Testing was conducted using the integrated `MedicalXRBenchmarkRunner`:
 
 | Test ID | Condition Tested | Voxel Res | Avg FPS | 1% Low FPS | Frame Time | VRAM (MB) | GC Alloc |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: |

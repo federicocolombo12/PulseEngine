@@ -53,6 +53,13 @@ PulseEngine processes three primary clinical biomarkers:
 
 ## 3. Pre-Configured Clinical Scenarios
 
+<p align="center">
+  <img src="../../images/scenario_calma.gif" width="32%" alt="Scenario Calma - Parasympathetic Harmony" />
+  <img src="../../images/scenario_stress.gif" width="32%" alt="Scenario Stress - Sympathetic Arousal" />
+  <img src="../../images/scenario_ipossia.gif" width="32%" alt="Scenario Ipossia - Critical Hypoxia" />
+  <br><em>Real in-engine clinical transitions: Left: Calma (soft melting geometry, high HRV). Center: Stress (rigid contraction, high turbulence). Right: Ipossia (cyanotic indigo hue, desaturated cellular particles).</em>
+</p>
+
 PulseEngine includes three calibrated clinical simulation presets ready for instant testing:
 
 | Parameter | 🌿 Scenario: Calma | ⚡ Scenario: Stress | 🩸 Scenario: Ipossia |

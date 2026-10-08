@@ -1,0 +1,19 @@
+{
+    "name": "PulseEngine.Runtime",
+    "rootNamespace": "PulseEngine",
+    "references": [
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.VisualEffectGraph.Runtime",
+        "Unity.Mathematics",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

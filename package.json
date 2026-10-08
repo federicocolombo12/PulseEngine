@@ -1,0 +1,48 @@
+{
+  "name": "com.federicocolombo.pulseengine",
+  "version": "1.0.0",
+  "displayName": "PulseEngine: Signal Routing & Volumetric VFX",
+  "description": "High-performance virtual DAW mixer and real-time signal routing console for Unity, paired with a GPU Signed Distance Field (SDF) raymarching and VFX Graph voxelization engine.",
+  "unity": "6000.0",
+  "unityRelease": "0b1",
+  "documentationUrl": "https://github.com/federicocolombo12/PulseEngine/blob/main/Documentation~/index.md",
+  "changelogUrl": "https://github.com/federicocolombo12/PulseEngine/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/federicocolombo12/PulseEngine/blob/main/LICENSE.md",
+  "keywords": [
+    "signal-routing",
+    "daw-mixer",
+    "sdf",
+    "signed-distance-field",
+    "raymarching",
+    "vfx-graph",
+    "volumetric",
+    "biofeedback",
+    "medical-xr",
+    "osc",
+    "websocket",
+    "compute-shader"
+  ],
+  "author": {
+    "name": "Federico Colombo",
+    "email": "chiccoclub5@gmail.com",
+    "url": "https://github.com/federicocolombo12"
+  },
+  "dependencies": {
+    "com.unity.render-pipelines.universal": "17.0.0",
+    "com.unity.visualeffectgraph": "17.0.0",
+    "com.unity.inputsystem": "1.7.0",
+    "com.unity.mathematics": "1.3.2"
+  },
+  "samples": [
+    {
+      "displayName": "01 Signal Routing & DAW Demo",
+      "description": "Quickstart demo showing virtual signal patching, real-time wave generators, and dynamic visual binders.",
+      "path": "Samples~/01_SignalRoutingDemo"
+    },
+    {
+      "displayName": "02 Clinical Biofeedback Suite",
+      "description": "Flagship medical XR sample showcasing physiological ECG/SpO2/HRV stress biofeedback morphing procedural volumetric anatomy.",
+      "path": "Samples~/02_ClinicalBiofeedback"
+    }
+  ]
+}

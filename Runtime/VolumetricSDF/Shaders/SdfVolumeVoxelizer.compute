@@ -1,0 +1,352 @@
+#pragma kernel CSMain
+
+// Risoluzione del volume
+float3 _VolumeResolution;
+// Dimensioni reali del volume in local space (metri)
+float3 _VolumeSize;
+
+// Output: RenderTexture 3D (R = distanza, GBA = colore RGB)
+RWTexture3D<float4> Result;
+
+// Dati dei nodi SDF (Max 16 nodi, allineati con il raymarcher)
+#define MAX_NODES 16
+int _NodeCount;
+float4x4 _NodeMatrices[MAX_NODES];
+float4x4 _NodeInvMatrices[MAX_NODES];
+float4 _NodeSizes[MAX_NODES];
+float4 _NodeParams[MAX_NODES]; // x = shapeType or (100+modType), y = combineOp or strength, z = pulse or freq, w = blend or falloff
+float4 _NodeColors[MAX_NODES];
+float _GlobalBlendSoftness;
+
+Texture3D<float> _NodeTex0;
+Texture3D<float> _NodeTex1;
+Texture3D<float> _NodeTex2;
+Texture3D<float> _NodeTex3;
+Texture3D<float> _NodeTex4;
+Texture3D<float> _NodeTex5;
+Texture3D<float> _NodeTex6;
+Texture3D<float> _NodeTex7;
+Texture3D<float> _NodeTex8;
+Texture3D<float> _NodeTex9;
+Texture3D<float> _NodeTex10;
+Texture3D<float> _NodeTex11;
+Texture3D<float> _NodeTex12;
+Texture3D<float> _NodeTex13;
+Texture3D<float> _NodeTex14;
+Texture3D<float> _NodeTex15;
+SamplerState sampler_LinearClamp; // Used for all node textures
+
+// ── Operazioni Booleane Morbide (CSG Blending) ─────────────────────────
+float smin(float a, float b, float k)
+{
+    float h = max(k - abs(a - b), 0.0) / k;
+    return min(a, b) - h * h * h * k * (1.0 / 6.0);
+}
+
+float smax(float a, float b, float k)
+{
+    float h = max(k - abs(a - b), 0.0) / k;
+    return max(a, b) + h * h * h * k * (1.0 / 6.0);
+}
+
+// ── Forme Primitive (SDF Primitives) ───────────────────────────────────
+float sdSphere(float3 p, float r)
+{
+    return length(p) - r;
+}
+
+float sdBox(float3 p, float3 b)
+{
+    float3 q = abs(p) - b;
+    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
+}
+
+float sdTorus(float3 p, float2 t)
+{
+    float2 q = float2(length(p.xz) - t.x, p.y);
+    return length(q) - t.y;
+}
+
+float sdCapsuleY(float3 p, float r, float h)
+{
+    float capH = max(0.0, h * 0.5 - r);
+    p.y -= clamp(p.y, -capH, capH);
+    return length(p) - r;
+}
+
+float sdCylinderY(float3 p, float r, float h)
+{
+    float2 d = abs(float2(length(p.xz), p.y)) - float2(r, h * 0.5);
+    return min(max(d.x, d.y), 0.0) + length(max(d, 0.0));
+}
+
+// ── Valutazione di un Nodo Geometrico SDF ──────────────────────────────
+float evaluateNodeSDF(int index, float3 p)
+{
+    int type = (int)_NodeParams[index].x;
+    float3 size = _NodeSizes[index].xyz;
+    float pulse = _NodeParams[index].z;
+
+    float rawD = 1000.0;
+    if (type == 0) // Sphere
+    {
+        rawD = sdSphere(p, size.x + pulse * 0.06);
+    }
+    else if (type == 1) // Box
+    {
+        rawD = sdBox(p, size + float3(pulse * 0.05, pulse * 0.05, pulse * 0.05));
+    }
+    else if (type == 2) // Torus
+    {
+        rawD = sdTorus(p, float2(size.x, size.y + pulse * 0.04));
+    }
+    else if (type == 3) // CapsuleY
+    {
+        rawD = sdCapsuleY(p, size.x + pulse * 0.05, size.y);
+    }
+    else if (type == 4) // CylinderY
+    {
+        rawD = sdCylinderY(p, size.x + pulse * 0.05, size.y);
+    }
+    else if (type == 5) // BakedTexture3D
+    {
+        float3 boxSize = max(size * 2.0, 0.0001);
+        float3 uvw = (p / boxSize) + 0.5;
+        float3 clampedUvw = saturate(uvw);
+        
+        float rawDist = 0.0;
+        switch(index)
+        {
+            case 0: rawDist = _NodeTex0.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 1: rawDist = _NodeTex1.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 2: rawDist = _NodeTex2.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 3: rawDist = _NodeTex3.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 4: rawDist = _NodeTex4.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 5: rawDist = _NodeTex5.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 6: rawDist = _NodeTex6.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 7: rawDist = _NodeTex7.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 8: rawDist = _NodeTex8.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 9: rawDist = _NodeTex9.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 10: rawDist = _NodeTex10.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 11: rawDist = _NodeTex11.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 12: rawDist = _NodeTex12.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 13: rawDist = _NodeTex13.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 14: rawDist = _NodeTex14.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            case 15: rawDist = _NodeTex15.SampleLevel(sampler_LinearClamp, clampedUvw, 0).r; break;
+            default: rawDist = 0.0; break;
+        }
+        
+        float scalingFactor = max(boxSize.x, max(boxSize.y, boxSize.z));
+        float dist = rawDist * scalingFactor;
+        float3 q = max(abs(p) - size, 0.0);
+        dist += length(q);
+        
+        rawD = dist - (pulse * 0.05);
+    }
+
+    return rawD;
+}
+
+// ── MudBun Domain Modifier Volume Deformation ────────────────────────────
+float3 applyModifier(int index, float3 p)
+{
+    float4 param = _NodeParams[index]; // x = 100+scope+type, y = strength, z = freq, w = falloff
+    int modType = ((int)param.x) % 10;
+    float strength = param.y;
+    float frequency = param.z;
+    float falloff = max(param.w, 0.001);
+    float3 size = _NodeSizes[index].xyz;
+
+    float3 pLocal = mul(_NodeMatrices[index], float4(p, 1.0)).xyz;
+
+    float3 dBox = max(abs(pLocal) - size, 0.0);
+    float distOutside = length(dBox);
+    float influence = 1.0 - smoothstep(0.0, falloff, distOutside);
+
+    if (influence > 0.0001)
+    {
+        if (modType == 0) // Twist (around local Y)
+        {
+            float twist = strength * 6.2831853 * influence;
+            float c = cos(twist * pLocal.y);
+            float s = sin(twist * pLocal.y);
+            pLocal.xz = float2(c * pLocal.x - s * pLocal.z, s * pLocal.x + c * pLocal.z);
+        }
+        else if (modType == 1) // Bend (around local Y spine bending in XY)
+        {
+            float bend = strength * 3.14159265 * influence;
+            float cB = cos(bend * pLocal.y);
+            float sB = sin(bend * pLocal.y);
+            pLocal.xy = float2(cB * pLocal.x - sB * pLocal.y, sB * pLocal.x + cB * pLocal.y);
+        }
+        else if (modType == 2) // Noise (3D multi-axis harmonic turbulence)
+        {
+            float freq = max(frequency, 0.1);
+            float3 noiseVal = float3(
+                sin(pLocal.y * freq + 0.35) * cos(pLocal.z * freq * 0.8),
+                sin(pLocal.z * freq + 1.12) * cos(pLocal.x * freq * 0.8),
+                sin(pLocal.x * freq + 2.21) * cos(pLocal.y * freq * 0.8)
+            ) * (strength * influence * 0.1);
+            pLocal += noiseVal;
+        }
+
+        p = mul(_NodeInvMatrices[index], float4(pLocal, 1.0)).xyz;
+    }
+
+    return p;
+}
+
+// ── Calcolo Mappa SDF Globale (Ritorna float4: x = Distanza, yzw = Colore RGB)
+// Ordine MudBun: ogni nodo si combina sequenzialmente dall'alto verso il basso (top-to-bottom)
+float4 map(float3 p)
+{
+    if (_NodeCount <= 0)
+    {
+        return float4(1000.0, 0, 0, 0);
+    }
+
+    float shapeDist[MAX_NODES];
+    float3 shapeCol[MAX_NODES];
+    bool isShape[MAX_NODES];
+
+    // 1. Pass globale: modificatori con scope AllNodesInVolume (type >= 110.0)
+    float3 p_global = p;
+    for (int m = _NodeCount - 1; m >= 0; m--)
+    {
+        if (m >= MAX_NODES) continue;
+        float t_m = _NodeParams[m].x;
+        if (t_m >= 110.0)
+        {
+            p_global = applyModifier(m, p_global);
+        }
+    }
+
+    // 2. Pass gerarchico MudBun: per i modificatori PrecedingInHierarchy (100.0 <= type < 110.0)
+    float3 p_curr = p_global;
+    for (int i = _NodeCount - 1; i >= 0; i--)
+    {
+        if (i >= MAX_NODES) continue;
+        float type = _NodeParams[i].x;
+        if (type >= 100.0 && type < 110.0) // PrecedingInHierarchy modifier
+        {
+            p_curr = applyModifier(i, p_curr);
+            isShape[i] = false;
+        }
+        else if (type >= 110.0) // AllNodesInVolume (già applicato globalmente)
+        {
+            isShape[i] = false;
+        }
+        else if (type >= 0.0) // Shape
+        {
+            float3 p_local = mul(_NodeMatrices[i], float4(p_curr, 1.0)).xyz;
+            shapeDist[i] = evaluateNodeSDF(i, p_local);
+            shapeCol[i] = _NodeColors[i].rgb;
+            isShape[i] = true;
+        }
+        else
+        {
+            isShape[i] = false;
+        }
+    }
+
+    // Forward pass: fusione gerarchica CSG (Smooth/Hard Booleans)
+    float d = 1000.0;
+    float3 col = float3(0, 0, 0);
+    bool firstShape = true;
+
+    for (int j = 0; j < _NodeCount; j++)
+    {
+        if (j >= MAX_NODES) break;
+        if (!isShape[j]) continue;
+
+        float d_j = shapeDist[j];
+        float3 col_j = shapeCol[j];
+
+        if (firstShape)
+        {
+            d = d_j;
+            col = col_j;
+            firstShape = false;
+            continue;
+        }
+
+        int op_j = (int)_NodeParams[j].y;
+        float k = _NodeParams[j].w; // Per-node blendSoftness
+
+        // Se l'operazione è Smooth (0, 4, 5) ma k == 0, usa fallback globalBlendSoftness se impostato
+        if (k <= 0.0005 && (op_j == 0 || op_j == 4 || op_j == 5))
+        {
+            k = _GlobalBlendSoftness;
+        }
+
+        if (k > 0.0005)
+        {
+            // --- CSG con fusione morbida (Smooth) ---
+            if (op_j == 2 || op_j == 4) // Smooth Subtraction
+            {
+                float mixFactor = clamp(0.5 + 0.5 * (d + d_j) / k, 0.0, 1.0);
+                d = smax(d, -d_j, k);
+                col = lerp(col_j, col, mixFactor);
+            }
+            else if (op_j == 3 || op_j == 5) // Smooth Intersection
+            {
+                float mixFactor = clamp(0.5 + 0.5 * (d_j - d) / k, 0.0, 1.0);
+                d = smax(d, d_j, k);
+                col = lerp(col, col_j, mixFactor);
+            }
+            else // Smooth Union (0, 1 con k > 0)
+            {
+                float mixFactor = clamp(0.5 + 0.5 * (d_j - d) / k, 0.0, 1.0);
+                d = smin(d, d_j, k);
+                col = lerp(col_j, col, mixFactor);
+            }
+        }
+        else
+        {
+            // --- CSG netto (Hard Boolean: k <= 0.0005) ---
+            if (op_j == 2 || op_j == 4) // Subtraction (current cuts accumulated)
+            {
+                if (-d_j > d) col = col_j;
+                d = max(d, -d_j);
+            }
+            else if (op_j == 3 || op_j == 5) // Intersection
+            {
+                if (d_j > d) col = col_j;
+                d = max(d, d_j);
+            }
+            else // Hard Union
+            {
+                if (d_j < d) col = col_j;
+                d = min(d, d_j);
+            }
+        }
+    }
+
+    return float4(d, col);
+}
+
+// ── Kernel Principale ──────────────────────────────────────────────────
+[numthreads(4, 4, 4)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    // Verifica che l'indice sia all'interno dei limiti della texture
+    if (any(id >= (uint3)_VolumeResolution))
+        return;
+
+    // Converte la griglia in coordinate spaziali locali (mappate sul volume)
+    float3 uvw = (float3)id / (_VolumeResolution - 1.0);
+    float3 localPos = (uvw - 0.5) * _VolumeSize;
+
+    // Calcola il valore SDF e colore a questa posizione
+    float4 distColor = map(localPos);
+
+    // Normalizzazione della distanza per VFX Graph:
+    // VFX Graph (ConformToSDF / PositionSDF) calcola: distToSurface = abs(dist) * scalingFactor
+    // dove scalingFactor = max(_VolumeSize).
+    // Dividendo qui per scalingFactor, quando VFX Graph moltiplica per scalingFactor riotterrà l'esatta metrica reale in metri.
+    float volumeScale = max(_VolumeSize.x, max(_VolumeSize.y, _VolumeSize.z));
+    distColor.x /= max(volumeScale, 0.0001);
+
+    // Salva il valore nella texture 3D (R = distanza normalizzata, GBA = colore RGB)
+    Result[id] = distColor;
+}

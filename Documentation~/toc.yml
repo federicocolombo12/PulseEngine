@@ -1,0 +1,36 @@
+- name: Overview
+  href: index.md
+- name: Installation & Setup
+  href: installation-and-setup.md
+- name: Getting Started
+  href: getting-started.md
+- name: Signal Routing & DAW Mixer
+  items:
+    - name: Architecture & Data Pipeline
+      href: manual/signal-routing/architecture.md
+    - name: DAW Mixer Console Manual
+      href: manual/signal-routing/daw-mixer.md
+    - name: Multi-Protocol Ingestion (OSC, WS, Serial, Simulator)
+      href: manual/signal-routing/multi-protocol-sources.md
+    - name: Modifiers & Metronome
+      href: manual/signal-routing/modifiers-and-metronome.md
+    - name: Property & Color Binders
+      href: manual/signal-routing/binders.md
+- name: Volumetric SDF Engine
+  items:
+    - name: Primitives & CSG Operations
+      href: manual/volumetric-sdf/primitives-and-csg.md
+    - name: Standalone Modifier Volumes
+      href: manual/volumetric-sdf/modifier-volumes.md
+    - name: GPU Voxelizer & VFX Graph Pipeline
+      href: manual/volumetric-sdf/gpu-voxelizer-vfx.md
+    - name: Triplanar Texturing & MatCaps
+      href: manual/volumetric-sdf/surface-texturing.md
+- name: Clinical Biofeedback (Flagship Sample)
+  items:
+    - name: Medical XR Bio-Feedback Suite
+      href: manual/clinical-biofeedback/biofeedback-suite.md
+- name: Performance & Mobile VR
+  items:
+    - name: Quest 3 Benchmarking & Zero-GC Profiling
+      href: manual/benchmarks/quest3-profiling.md

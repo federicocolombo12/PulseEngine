@@ -1,0 +1,31 @@
+# Unity Package .gitignore
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+
+# OS / Editor temporary backups (excluding Unity special folders)
+*~
+!Documentation~/
+!Documentation~/**
+!Samples~/
+!Samples~/**
+
+# IDE
+.vs/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+
+# Crashlytics
+crashlytics-build.properties

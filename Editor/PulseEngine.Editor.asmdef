@@ -1,0 +1,23 @@
+{
+    "name": "PulseEngine.Editor",
+    "rootNamespace": "PulseEngine.Editor",
+    "references": [
+        "PulseEngine.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Universal.Editor",
+        "Unity.VisualEffectGraph.Runtime",
+        "Unity.VisualEffectGraph.Editor",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

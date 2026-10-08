@@ -161,14 +161,12 @@ namespace GenericDataStreaming
                 {
                     float sourceVal = 0f;
                     float rawSourceVal = 0f;
-                    if (!string.IsNullOrEmpty(ch.sourceChannelId))
+                    string srcId = string.IsNullOrEmpty(ch.sourceChannelId) ? "heart_rate" : ch.sourceChannelId;
+                    var sourceCh = GetChannel(srcId);
+                    if (sourceCh != null)
                     {
-                        var sourceCh = GetChannel(ch.sourceChannelId);
-                        if (sourceCh != null)
-                        {
-                            sourceVal = sourceCh.Value;
-                            rawSourceVal = sourceCh.RawValue;
-                        }
+                        sourceVal = sourceCh.Value;
+                        rawSourceVal = sourceCh.RawValue;
                     }
                     ch.ProcessVirtual(sourceVal, rawSourceVal, dt);
                 }

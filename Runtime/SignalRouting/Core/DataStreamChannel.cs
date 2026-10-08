@@ -83,11 +83,16 @@ namespace GenericDataStreaming
             
             if (filterType == ChannelFilterType.SineWavePulse)
             {
-                // Usa il valore raw (BPM grezzo, 60-180) per calcolare la frequenza reale
-                float freq = rawSourceValue / 60f; 
-                if (freq <= 0.01f) freq = sourceValue; // Fallback se raw non ha senso
+                // Determina il BPM efficace: privilegia rawSourceValue (es: 60-180 BPM), poi sourceValue, con fallback a 75 BPM
+                float bpm = 75f;
+                if (rawSourceValue > 10f) bpm = rawSourceValue;
+                else if (sourceValue > 0.1f) bpm = sourceValue > 10f ? sourceValue : sourceValue * 60f;
+
+                float freq = bpm / 60f;
                 phase += freq * deltaTime * Mathf.PI * 2f;
-                computedInput = (Mathf.Sin(phase) + 1f) / 2f; // Oscillates between 0 and 1
+                if (phase > Mathf.PI * 2000f) phase -= Mathf.PI * 2000f;
+
+                computedInput = (Mathf.Sin(phase) + 1f) * 0.5f; // Oscilla morbidamente tra 0 e 1
                 
                 // Forza l'input range a 0-1 e azzera lo smoothing per non attenuare la sinusoide
                 inputRange = new Vector2(0f, 1f);

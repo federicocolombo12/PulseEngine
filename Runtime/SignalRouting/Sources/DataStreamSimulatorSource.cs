@@ -210,6 +210,19 @@ namespace GenericDataStreaming
             float hrvSdnnVal = Mathf.Lerp(hrvSdnnMin, hrvSdnnMax, Mathf.PerlinNoise(t * 0.2f, 42.42f));
             DataStreamRegistry.Instance.PushValue(hrvSdnnChannelId, hrvSdnnVal);
 
+            // 5. Simulazione Battito Cardiaco Ritmico (Trigger Discreto 'heartbeat')
+            // Sincronizzato con la frequenza cardiaca attiva (manuale o interpolata dagli scenari clinici)
+            float currentBpm = (currentScenario == SimulationScenario.Manual) ? simulatedHeartRate : sineVal;
+            if (currentBpm > 10f)
+            {
+                float beatInterval = 60f / currentBpm;
+                heartbeatTimer += dt;
+                if (heartbeatTimer >= beatInterval)
+                {
+                    heartbeatTimer -= beatInterval;
+                    DataStreamRegistry.Instance.PushTrigger("heartbeat");
+                }
+            }
         }
 
     }

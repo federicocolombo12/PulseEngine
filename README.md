@@ -37,7 +37,8 @@ Built following professional audio production paradigms, it provides a **Virtual
 * **1-Click Preset Snapshots**: Save, hot-swap, and overwrite complete system states (channels, faders, node hierarchies, materials, gradients) as ScriptableObjects.
 
 <p align="center">
-  <img src="Documentation~/images/daw_mixer_full.png" width="100%" alt="PulseEngine Virtual DAW Mixer Console" />
+  <img src="Documentation~/images/daw_mixer_full.png" width="68%" alt="PulseEngine Virtual DAW Mixer Console" />
+  <img src="Documentation~/images/daw_channel_strip.png" width="30%" alt="Individual Channel Strip Closeup" />
 </p>
 
 ### 🧬 2. Volumetric SDF Engine
@@ -46,14 +47,41 @@ Built following professional audio production paradigms, it provides a **Virtual
 * **Implicit Surface Texturing**: Seamless triplanar projection in object space, Morten Mikkelsen Surface Gradient normal perturbations, and View-Space MatCap shading.
 * **Live Scene View Editing**: Full `[ExecuteAlways]` support allowing interactive sculpting with native transform gizmos without entering Play Mode.
 
+<p align="center">
+  <img src="Documentation~/images/sdf_group_controller_inspector.png" width="32%" alt="SdfGroupController Inspector" />
+  <img src="Documentation~/images/sdf_node_inspector.png" width="32%" alt="SdfNode Inspector" />
+  <img src="Documentation~/images/biosignal_sdf_material_inspector.png" width="32%" alt="BioSignalSDF Material Inspector" />
+</p>
+
 ### ⚡ 3. GPU Voxelizer & VFX Graph Integration
 * **Real-Time 3D Texture Generation**: Computes a $128^3$ RGBAHalf signed distance and color volume on the GPU in under 0.8 ms.
 * **Direct VFX Graph Binding**: Feeds distance values (Red channel) for particle adhesion and dynamic colors (Green/Blue/Alpha channels) for cellular tinting.
 * **Physics-Only Mode (Fill-Rate Decoupling)**: Completely disables solid fragment raymarching on standalone VR headsets (Meta Quest 3), saving up to 100% of screen pixel fill-rate while maintaining full particle physics.
 
+<p align="center">
+  <img src="Documentation~/images/sdf_volume_voxelizer_inspector.png" width="38%" alt="SdfVolumeVoxelizer Inspector" />
+  <img src="Documentation~/images/vfx_graph_blackboard.png" width="28%" alt="VFX Graph Blackboard" />
+  <img src="Documentation~/images/vfx_graph_sdf_blocks.png" width="30%" alt="VFX Graph Attractor Blocks" />
+</p>
+
+### 🫀 4. Clinical Biofeedback Suite (Flagship XR Showcase)
+* **Interoceptive Visual Biofeedback**: Developed in collaboration with clinical trauma therapy researchers at **Politecnico di Torino** and **Lemons in the Room**.
+* **Physiological Modulation**: Real-time heart rate (BPM), blood oxygenation ($SpO_2$), and autonomic stress ($HRV\text{ RMSSD}$) seamlessly drive organic morphology and particle dynamics across 3 calibrated clinical states:
+
+<p align="center">
+  <img src="Documentation~/images/scenario_calma.gif" width="32%" alt="Scenario Calma" />
+  <img src="Documentation~/images/scenario_stress.gif" width="32%" alt="Scenario Stress" />
+  <img src="Documentation~/images/scenario_ipossia.gif" width="32%" alt="Scenario Ipossia" />
+  <br><em>Left: <b>Calma</b> (soft melting geometry, high HRV). Center: <b>Stress</b> (contracted morphology, chaotic turbulence). Right: <b>Ipossia</b> (cyanotic indigo hue, desaturated cells).</em>
+</p>
+
 ---
 
 ## 📊 Performance & Mobile VR Benchmarks
+
+<p align="center">
+  <img src="Documentation~/images/daw_benchmark_results_table.png" width="100%" alt="DAW Benchmark Results Table" />
+</p>
 
 Empirical profiling results captured on **Meta Quest 3 (Standalone Android OpenXR)** using the integrated `MedicalXRBenchmarkRunner`:
 

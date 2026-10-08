@@ -47,6 +47,10 @@ Because the surface gradient is inherently tangent to the geometric normal $\mat
 ---
 
 ## 3. View-Space MatCap Shading
+<p align="center">
+  <img src="../../images/biosignal_sdf_material_inspector.png" width="70%" alt="BioSignalSDF Material Inspector with Triplanar, Bump, and MatCap" />
+  <br><em>BioSignalSDF material inspector displaying raymarching steps, triplanar albedo tiling, Mikkelsen bump strength, and view-space MatCap blending.</em>
+</p>
 
 For stylized medical illustrations and clinical diagnostics, PulseEngine supports **Material Capture (MatCap)** shading.
 

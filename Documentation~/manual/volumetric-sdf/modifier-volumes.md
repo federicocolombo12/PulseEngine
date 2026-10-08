@@ -46,9 +46,14 @@ $$\mathbf{p}' = \mathbf{p} + \nabla \text{Noise}(\mathbf{p} \cdot \text{frequenc
 
 ## 3. Double Wireframe Scene Gizmo
 
-In the Unity Scene View, `SdfModifierVolume` renders an interactive dual gizmo:
-* **Solid Yellow Box**: The **Core Zone** ($w = 1.0$), where $100\%$ of the deformation force applies.
-* **Dotted Outer Cyan Margin**: The **Falloff Zone** ($0.0 < w < 1.0$), where deformation diminishes smoothly toward zero, ensuring $C^1$ continuity with unwarped space.
+<p align="center">
+  <img src="../../images/sdf_volume_scene_gizmo.png" width="65%" alt="Dual Wireframe Scene Gizmo and Volumetric Bounds" />
+  <br><em>Scene View visualization showing the orange volumetric bounding box and inner node boundary gizmos.</em>
+</p>
+
+In the Unity Scene View, `SdfModifierVolume` and the volume controller render interactive bounds:
+* **Solid Wireframe Box**: The **Core Zone** ($w = 1.0$), where $100\%$ of the deformation force applies.
+* **Falloff Margin**: The outer boundary where deformation diminishes smoothly toward zero, ensuring $C^1$ continuity with unwarped space.
 
 ---
 

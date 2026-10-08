@@ -55,14 +55,22 @@ In VFX Graph, connecting `SdfVolumeSize` directly to the `FieldTransform.size` p
 
 ## 3. Configuring VFX Graph Blocks
 
+<p align="center">
+  <img src="../../images/vfx_graph_blackboard.png" width="45%" alt="VFX Graph Blackboard Properties" />
+  <img src="../../images/vfx_graph_sdf_blocks.png" width="45%" alt="VFX Graph SDF Position and Attractor Blocks" />
+  <br><em>Left: Exposed Blackboard parameters. Right: Set Position Shape (SDF Surface) and Attractor Shape (Stick Distance 0.08m, Attraction Force 25, Stick Force 35).</em>
+</p>
+
 To bind a VFX Graph to PulseEngine's dynamic volume:
 
 ### 1. Spawn Context: `Position (Signed Distance Field)`
-* **SDF**: Expose a Blackboard `Texture3D` property and assign the rendered volume.
+* **SDF**: Expose a Blackboard `Texture3D` property (`SdfVolumeTexture`) and assign the rendered volume.
 * **Field Transform**: Assign the `Transform` of the `SDF_Volume` GameObject.
 * **Field Size**: Bind `SdfVolumeSize`.
 
-### 2. Update Context: `Conform to Signed Distance Field`
+### 2. Update Context: `Attractor Shape Signed Distance Field` (or `Conform to SDF`)
+* **Distance Field**: Connect `SdfVolumeTexture`.
+* **Field Transform**: Connect `SdfVolumeTransform`.
 * **Stick Distance**: Set to `0.08` ($8\text{ cm}$).
 * **Attraction Speed**: `4.0`.
 * **Attraction Force**: `25.0`.
@@ -87,6 +95,10 @@ Raymarching solid surfaces involves calculating ray steps for every pixel on the
 ---
 
 ## 5. Inspector Reference: `SdfVolumeVoxelizer`
+
+<p align="center">
+  <img src="../../images/sdf_volume_voxelizer_inspector.png" width="70%" alt="SdfVolumeVoxelizer Inspector" />
+</p>
 
 | Property | Type | Default | Description |
 | :--- | :--- | :--- | :--- |

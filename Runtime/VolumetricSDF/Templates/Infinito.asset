@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad4d8bd42479ba94cb1a6f58e86dcfc5, type: 3}
+  m_Name: Infinito
+  m_EditorClassIdentifier: Assembly-CSharp::MedicalXR.RayMarching.SdfSceneTemplate
+  textureResolution: 100
+  volumeSize: 2
+  renderSolidMesh: 0
+  albedoTexture: {fileID: 2800000, guid: 18e402c5c8f541edb868fbd88f2c4418, type: 3}
+  textureScale: 2
+  textureBlend: 0
+  triplanarSharpness: 4
+  enableBumpMap: 0
+  bumpMap: {fileID: 2800000, guid: b10144ca145f4d8c92fb2e32efcde4c9, type: 3}
+  bumpScale: 0.5
+  enableMatCap: 0
+  matCapTexture: {fileID: 2800000, guid: 68af238e804d4916b3d1c94905ebbda4, type: 3}
+  matCapBlend: 0
+  globalBlendSoftness: 0.16672134
+  pulseMultiplier: 0.3
+  pulseDecaySpeed: 5
+  shaderPulseParam: _RWavePulse
+  nodes:
+  - nodeName: SdfNode_Spikes
+    shapeType: 5
+    bakedSdfTexture: {fileID: 11700000, guid: ac22e3fc4d67aec4c9bf0e556ca9f7e0, type: 2}
+    localPosition: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: -0, y: 0, z: 0}
+    localScale: {x: 0.6, y: 0.6, z: 0.6}
+    size: {x: 0.24, y: 0.24, z: 0.24}
+    combineOp: 0
+    blendSoftness: 0
+    shapeColor: {r: 1, g: 0.55, b: 0, a: 1}
+    pulseSensitivity: 1.4
+    cyclicAmplitude: {x: 0, y: 0, z: 0}
+    cyclicFrequency: {x: 1, y: 0, z: 2}
+    cyclicAmplitudeMultiplier: 3.5338104
+  modifierVolumes: []
+  channels:
+  - id: heart_pulse
+    sourceType: 1
+    filterType: 1
+    sourceChannelId: heart_rate
+    inputRange: {x: 0, y: 1}
+    outputRange: {x: 0, y: 1}
+    smoothing: 0
+    isMuted: 0
+    isSolo: 0
+  - id: heart_rate
+    sourceType: 0
+    filterType: 0
+    sourceChannelId: 
+    inputRange: {x: 40, y: 180}
+    outputRange: {x: 0, y: 1}
+    smoothing: 0.4
+    isMuted: 0
+    isSolo: 0
+  - id: spo2
+    sourceType: 0
+    filterType: 0
+    sourceChannelId: 
+    inputRange: {x: 70, y: 100}
+    outputRange: {x: 0, y: 1}
+    smoothing: 0.6
+    isMuted: 0
+    isSolo: 0
+  - id: perfusion_index
+    sourceType: 0
+    filterType: 0
+    sourceChannelId: 
+    inputRange: {x: 0.5, y: 10}
+    outputRange: {x: 0, y: 1}
+    smoothing: 0.5
+    isMuted: 0
+    isSolo: 0
+  - id: hrv_rmssd
+    sourceType: 0
+    filterType: 0
+    sourceChannelId: 
+    inputRange: {x: 10, y: 100}
+    outputRange: {x: 0, y: 1}
+    smoothing: 0.5
+    isMuted: 0
+    isSolo: 0
+  - id: hrv_sdnn
+    sourceType: 0
+    filterType: 0
+    sourceChannelId: 
+    inputRange: {x: 10, y: 100}
+    outputRange: {x: 0, y: 1}
+    smoothing: 0.5
+    isMuted: 0
+    isSolo: 0
+  propertyBinders:
+  - channelId: hrv_rmssd
+    targetGameObjectName: SDF_Volume
+    targetComponentType: MedicalXR.RayMarching.SdfGroupController
+    targetPropertyName: globalBlendSoftness
+    weightMultiplier: 1
+    useLocalRemap: 1
+    localRemap: {x: 0.04, y: 0.22}
+  - channelId: heart_pulse
+    targetGameObjectName: SDF_Volume
+    targetComponentType: MedicalXR.RayMarching.SdfGroupController
+    targetPropertyName: continuousPulse
+    weightMultiplier: 1
+    useLocalRemap: 0
+    localRemap: {x: 0, y: 1}
+  - channelId: hrv_rmssd
+    targetGameObjectName: VfxCheckme_Target
+    targetComponentType: UnityEngine.VFX.VisualEffect
+    targetPropertyName: TurbulenceIntensity
+    weightMultiplier: 1
+    useLocalRemap: 1
+    localRemap: {x: 3, y: 0.5}
+  colorBinders: []

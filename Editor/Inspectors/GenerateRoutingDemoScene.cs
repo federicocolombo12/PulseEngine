@@ -62,7 +62,11 @@ namespace MedicalXR.EditorScripts
             voxelizer.enabled = false; 
             
             // Load Compute Shader
-            ComputeShader computeAsset = AssetDatabase.LoadAssetAtPath<ComputeShader>("Assets/_Core/RayMarching/Shaders/SdfVolumeVoxelizer.compute");
+            ComputeShader computeAsset = AssetDatabase.LoadAssetAtPath<ComputeShader>("Packages/com.federicocolombo.pulseengine/Runtime/VolumetricSDF/Shaders/SdfVolumeVoxelizer.compute");
+            if (computeAsset == null)
+            {
+                computeAsset = AssetDatabase.LoadAssetAtPath<ComputeShader>("Assets/_Core/RayMarching/Shaders/SdfVolumeVoxelizer.compute");
+            }
             voxelizer.voxelizerShader = computeAsset;
 
             // Add a base sphere to the SDF
@@ -77,7 +81,11 @@ namespace MedicalXR.EditorScripts
             // 5. Create Target VFX
             GameObject vfxGo = new GameObject("VfxCheckme_Target");
             var vfxComponent = vfxGo.AddComponent<VisualEffect>();
-            VisualEffectAsset vfxAsset = AssetDatabase.LoadAssetAtPath<VisualEffectAsset>("Assets/_Core/CheckmeIntegration/Vfx/VfxCheckme.vfx");
+            VisualEffectAsset vfxAsset = AssetDatabase.LoadAssetAtPath<VisualEffectAsset>("Packages/com.federicocolombo.pulseengine/Runtime/VFX/VfxCheckme.vfx");
+            if (vfxAsset == null)
+            {
+                vfxAsset = AssetDatabase.LoadAssetAtPath<VisualEffectAsset>("Assets/_Core/CheckmeIntegration/Vfx/VfxCheckme.vfx");
+            }
             vfxComponent.visualEffectAsset = vfxAsset;
             
             // Link Voxelizer to VFX

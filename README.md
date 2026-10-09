@@ -22,6 +22,16 @@ Built following professional audio production paradigms, it provides a **Virtual
 3. **Clinical & Creative Biofeedback**: Flagship medical XR templates translating heart rate (BPM), blood oxygenation (SpO2), and autonomic stress (HRV RMSSD) into visceral perceptual metaphors.
 
 <p align="center">
+  <a href="https://github.com/federicocolombo12/PulseEngine/raw/main/Documentation~/images/demo_raw.mp4">
+    <img src="Documentation~/images/demo_overview_preview.gif" width="100%" alt="PulseEngine Live In-Editor Demo Walkthrough" />
+  </a>
+  <br>
+  <b>🎬 <a href="https://github.com/federicocolombo12/PulseEngine/raw/main/Documentation~/images/demo_raw.mp4">Watch Full 1080p In-Editor Video Walkthrough (75s)</a></b>
+  <br>
+  <em>Live demonstration of the Virtual DAW Mixer console, multi-channel telemetry routing, real-time OLED oscilloscopes, and GPU particle swarm voxelization.</em>
+</p>
+
+<p align="center">
   <img src="Documentation~/images/csg_modeling_demo.gif" width="48%" alt="CSG Procedural Modeling" />
   <img src="Documentation~/images/vfx_swarm_adhesion.gif" width="48%" alt="VFX Swarm Adhesion" />
 </p>

@@ -64,15 +64,17 @@ Built following professional audio production paradigms, it provides a **Virtual
   <img src="Documentation~/images/vfx_graph_sdf_blocks.png" width="30%" alt="VFX Graph Attractor Blocks" />
 </p>
 
-### 🫀 4. Clinical Biofeedback Suite (Flagship XR Showcase)
-* **Interoceptive Visual Biofeedback**: Developed in collaboration with clinical trauma therapy researchers at **Politecnico di Torino** and **Lemons in the Room**.
-* **Physiological Modulation**: Real-time heart rate (BPM), blood oxygenation ($SpO_2$), and autonomic stress ($HRV\text{ RMSSD}$) seamlessly drive organic morphology and particle dynamics across 3 calibrated clinical states:
+### 🧠 4. Affective Biofeedback & Cross-Modal Perception (The Bouba-Kiki Paradigm)
+* **Cross-Modal Cognitive Grounding**: Grounded in the cross-modal neurological Bouba/Kiki effect (Ramachandran & Hubbard, 2001; Köhler, 1929) and Polyvagal Theory in collaboration with **Politecnico di Torino** and **Lemons in the Room**.
+* **Visceral Somatic Mirroring**: Translates autonomic nervous system arousal into intuitive volumetric morphology in real time:
+  * **Bouba (Parasympathetic / Low Arousal)**: High HRV RMSSD and calm cardiac rhythms melt primitives into bulbous, soothing, smooth-curved topologies with gentle luminescent particle adhesion.
+  * **Kiki (Sympathetic / High Arousal)**: Low HRV and adrenergic fight-or-flight spikes warp geometry into acute, jagged, high-frequency star protrusions with energetic turbulence.
 
 <p align="center">
-  <img src="Documentation~/images/scenario_calma.gif" width="32%" alt="Scenario Calma" />
-  <img src="Documentation~/images/scenario_stress.gif" width="32%" alt="Scenario Stress" />
-  <img src="Documentation~/images/scenario_ipossia.gif" width="32%" alt="Scenario Ipossia" />
-  <br><em>Left: <b>Calma</b> (soft melting geometry, high HRV). Center: <b>Stress</b> (contracted morphology, chaotic turbulence). Right: <b>Ipossia</b> (cyanotic indigo hue, desaturated cells).</em>
+  <img src="Documentation~/images/scenario_bouba.gif" width="32%" alt="Bouba Morphology (Parasympathetic Calm)" />
+  <img src="Documentation~/images/bouba_kiki_morph.gif" width="32%" alt="Real-Time Bouba-Kiki Morphing" />
+  <img src="Documentation~/images/scenario_kiki.gif" width="32%" alt="Kiki Morphology (Sympathetic Stress)" />
+  <br><em>Real in-engine capture: Left: <b>Bouba</b> (smooth bulbous lobes, parasympathetic rest). Center: <b>Dynamic Transition</b> (continuous real-time morphological morphing). Right: <b>Kiki</b> (acute star spikes, sympathetic fight-or-flight arousal).</em>
 </p>
 
 ---
@@ -91,7 +93,7 @@ Empirical profiling results captured on **Meta Quest 3 (Standalone Android OpenX
 | **Physics-Only Mode** | $64^3$ | **90.0 FPS** | **3.03 ms** | 2.00 MB | **0 Bytes** |
 | **Physics-Only Mode** | $128^3$ | **89.9 FPS** | **4.12 ms** | 16.00 MB | **0 Bytes** |
 | **Full Solid Raymarch** | $64^3$ | **72.1 FPS** | **7.84 ms** | 2.00 MB | **0 Bytes** |
-| **Clinical Stress Test** | $64^3$ | **90.0 FPS** | **3.08 ms** | 2.00 MB | **0 Bytes** |
+| **Bouba-Kiki Stress Test** | $64^3$ | **90.0 FPS** | **3.08 ms** | 2.00 MB | **0 Bytes** |
 
 > [!NOTE]
 > *Physics-Only Mode* achieves a **61.3% reduction in GPU frame time**, providing a guaranteed 90 Hz headroom for clinical applications where motion sickness prevention is critical.

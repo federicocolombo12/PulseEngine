@@ -51,31 +51,34 @@ PulseEngine processes three primary clinical biomarkers:
 
 ---
 
-## 3. Pre-Configured Clinical Scenarios
+## 3. The Bouba-Kiki Affective Continuum & Clinical Demonstration
+
+Grounded in cross-modal cognitive psychology (Köhler 1929, Ramachandran & Hubbard 2001) and Polyvagal Theory, PulseEngine frames the interoceptive biofeedback journey along the continuous **Bouba $\leftrightarrow$ Kiki** affective spectrum:
 
 <p align="center">
-  <img src="../../images/scenario_calma.gif" width="32%" alt="Scenario Calma - Parasympathetic Harmony" />
-  <img src="../../images/scenario_stress.gif" width="32%" alt="Scenario Stress - Sympathetic Arousal" />
-  <img src="../../images/scenario_ipossia.gif" width="32%" alt="Scenario Ipossia - Critical Hypoxia" />
-  <br><em>Real in-engine clinical transitions: Left: Calma (soft melting geometry, high HRV). Center: Stress (rigid contraction, high turbulence). Right: Ipossia (cyanotic indigo hue, desaturated cellular particles).</em>
+  <img src="../../images/scenario_bouba.gif" width="32%" alt="Bouba - Parasympathetic Rest" />
+  <img src="../../images/bouba_kiki_morph.gif" width="32%" alt="Bouba-Kiki Real-Time Transition" />
+  <img src="../../images/scenario_kiki.gif" width="32%" alt="Kiki - Sympathetic Arousal" />
+  <br><em>Real in-engine clinical capture: Left: <b>Bouba State</b> (parasympathetic calm, bulbous smooth lobes). Center: <b>Dynamic Morphing</b> (continuous real-time topological morphing). Right: <b>Kiki State</b> (sympathetic hyperarousal, acute star spikes and particle turbulence).</em>
 </p>
 
-PulseEngine includes three calibrated clinical simulation presets ready for instant testing:
+PulseEngine translates autonomic tone across this continuum:
 
-| Parameter | 🌿 Scenario: Calma | ⚡ Scenario: Stress | 🩸 Scenario: Ipossia |
+| Dimension / Parameter | 🟢 Bouba State (Parasympathetic / Low Arousal) | 🔄 Dynamic Transition Phase | 🔴 Kiki State (Sympathetic / High Arousal) |
 | :--- | :---: | :---: | :---: |
-| **Heart Rate** | $60\text{ BPM}$ (Resting) | $135\text{ BPM}$ (Tachycardia) | $85\text{ BPM}$ (Compensatory) |
-| **HRV RMSSD** | $75\text{ ms}$ (High Vagal Tone) | $16\text{ ms}$ (Suppressed) | $32\text{ ms}$ (Depressed) |
-| **Blood Oxygen ($SpO_2$)** | $99\%$ (Optimal) | $97\%$ (Stable) | $84\%$ (Critical Hypoxia) |
-| **Perfusion Index (PI)** | $6.5\%$ (Vasodilation) | $1.4\%$ (Vasoconstriction) | $2.1\%$ (Reduced) |
-| **Blend Softness** | $0.55\text{ m}$ (Melting) | $0.08\text{ m}$ (Contracted) | $0.25\text{ m}$ (Distorted) |
-| **Particle Turbulence**| $0.15$ (Laminar) | $2.80$ (Chaotic) | $0.85$ (Agitated) |
-| **Dominant Color** | Warm Coral Red / Golden | High-Contrast Orange / Sharp | Cyanotic Deep Indigo |
+| **Cognitive Affect** | Calming, soft, comforting, grounded | Organic morphological morphing | Alerting, urgent, high-tension, energetic |
+| **Heart Rate (HR)** | $55\text{--}65\text{ BPM}$ (Resting baseline) | Smooth continuous acceleration | $120\text{--}150\text{ BPM}$ (Tachycardia / Flight-or-fight) |
+| **Autonomic HRV (RMSSD)** | $65\text{--}90\text{ ms}$ (High vagal tone) | Adaptive hysteresis damping | $10\text{--}20\text{ ms}$ (Vagal withdrawal / Stress) |
+| **Blood Oxygenation ($SpO_2$)** | $98\text{--}100\%$ (Optimal arterial perfusion) | Continuous dynamic gradient | $95\text{--}97\%$ (or hypoxic compensation) |
+| **SDF Morphology** | Smooth rounded lobes, bulbous Euclidean SDF | Asymmetric exponential blending ($\tau = 2.5\text{s}$) | Acute star spires, high spatial frequency |
+| **CSG Blend Softness ($k$)** | $0.45\text{--}0.65\text{ m}$ (Melting / Organic) | Modulated in real time by HRV | $0.05\text{--}0.12\text{ m}$ (Rigid / Spiky) |
+| **VFX Particle Dynamics** | Gentle laminar adhesion, rhythmic pulsation | Directional velocity flow | Chaotic divergence, high turbulence curl |
+| **Chromatic Emission** | Bioluminescent soft pastel glow | Harmonic transition | Saturated crimson / fire embers |
 
 ---
 
 ## 4. Clinical Safety & Perceptual Damping
 
 > [!IMPORTANT]
-> **Avoiding Abrupt Visual Jumps**: In psychological and medical applications, sudden graphical cuts or jarring scale pops can startle patients, triggering an adverse sympathetic panic reflex.  
-> PulseEngine enforces **asymmetric exponential damping** ($\tau \approx 2.5\text{ s}$) across all clinical scenario transitions. When switching from Stress to Calma, the organism gently unwinds and dissolves over several breathing cycles rather than snapping instantaneously.
+> **Avoiding Jarring Transitions**: In somatic trauma therapy and clinical XR, abrupt visual jumps can trigger an adverse startle response.  
+> PulseEngine enforces **asymmetric exponential damping** ($\tau \approx 2.5\text{ s}$) across the entire Bouba-Kiki continuum. When a patient recovers from acute stress (transitioning from Kiki back to Bouba), the spiky protrusions smoothly dissolve and melt into peaceful bulbous geometry over multiple respiratory cycles, reinforcing parasympathetic down-regulation.

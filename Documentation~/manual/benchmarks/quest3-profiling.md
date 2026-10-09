@@ -39,9 +39,9 @@ Testing was conducted using the integrated `MedicalXRBenchmarkRunner`:
 | **06** | Physics-Only Ultra Res | $128^3$ | **89.9** | 86.8 | **4.12 ms** | 16.00 MB | **0 B** |
 | **07** | Solid Mesh Enabled ($32^3$) | $32^3$ | **78.4** | 71.2 | **7.12 ms** | 0.25 MB | **0 B** |
 | **08** | Solid Mesh Enabled ($64^3$) | $64^3$ | **72.1** | 68.4 | **7.84 ms** | 2.00 MB | **0 B** |
-| **09** | Clinical Scenario: Calma | $64^3$ | **90.0** | 88.6 | **3.05 ms** | 2.00 MB | **0 B** |
-| **10** | Clinical Scenario: Stress | $64^3$ | **90.0** | 88.1 | **3.08 ms** | 2.00 MB | **0 B** |
-| **11** | Clinical Scenario: Ipossia | $64^3$ | **90.0** | 88.3 | **3.06 ms** | 2.00 MB | **0 B** |
+| **09** | Bouba Morphology (Calm) | $64^3$ | **90.0** | 88.6 | **3.05 ms** | 2.00 MB | **0 B** |
+| **10** | Kiki Morphology (Stress) | $64^3$ | **90.0** | 88.1 | **3.08 ms** | 2.00 MB | **0 B** |
+| **11** | Dynamic Morphing Transition | $64^3$ | **90.0** | 88.3 | **3.06 ms** | 2.00 MB | **0 B** |
 
 ---
 

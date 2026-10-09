@@ -155,6 +155,7 @@ namespace MedicalXR.RayMarching
             }
             
             EnsureDummyTexture();
+            SynchronizeNodesListFromHierarchy();
         }
 
         void OnValidate()
@@ -162,6 +163,48 @@ namespace MedicalXR.RayMarching
             if (renderSolidMesh)
             {
                 EnsureMaterial();
+            }
+            if (nodes != null)
+            {
+                nodes.RemoveAll(n => n == null);
+                SynchronizeHierarchyFromNodesList();
+            }
+            if (modifierVolumes != null)
+            {
+                modifierVolumes.RemoveAll(m => m == null);
+            }
+        }
+
+        /// <summary>
+        /// Applica l'ordine della lista 'nodes' dell'Inspector ai GameObject figli (Sibling Index).
+        /// Garantisce che modificando l'ordine nell'Ispettore, la gerarchia di Unity e la valutazione CSG si allineino all'istante.
+        /// </summary>
+        public void SynchronizeHierarchyFromNodesList()
+        {
+            if (nodes == null) return;
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (nodes[i] != null && nodes[i].transform.parent == transform)
+                {
+                    nodes[i].transform.SetSiblingIndex(i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Allinea l'ordine delle liste 'nodes' e 'modifierVolumes' all'effettivo ordine della gerarchia di Unity (Sibling Index).
+        /// </summary>
+        public void SynchronizeNodesListFromHierarchy()
+        {
+            if (nodes != null)
+            {
+                nodes.RemoveAll(n => n == null);
+                nodes.Sort((a, b) => a.transform.GetSiblingIndex().CompareTo(b.transform.GetSiblingIndex()));
+            }
+            if (modifierVolumes != null)
+            {
+                modifierVolumes.RemoveAll(m => m == null);
+                modifierVolumes.Sort((a, b) => a.transform.GetSiblingIndex().CompareTo(b.transform.GetSiblingIndex()));
             }
         }
 

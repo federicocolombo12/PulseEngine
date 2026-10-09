@@ -10,6 +10,7 @@ namespace MedicalXR.RayMarching
     public class SdfNodeSnapshot
     {
         public string nodeName = "SdfNode";
+        public int siblingIndex = 0;
         public SdfShapeType shapeType = SdfShapeType.Sphere;
         public Texture3D bakedSdfTexture;
         public Vector3 localPosition;
@@ -29,6 +30,7 @@ namespace MedicalXR.RayMarching
     public class SdfModifierVolumeSnapshot
     {
         public string volumeName = "SdfModifierVolume";
+        public int siblingIndex = 0;
         public SdfModifierType modifierType = SdfModifierType.Twist;
         public SdfModifierScope scope = SdfModifierScope.AllNodesInVolume;
         public Vector3 localPosition;
@@ -142,15 +144,20 @@ namespace MedicalXR.RayMarching
                 template.shaderPulseParam = controller.shaderPulseParam;
                 template.renderSolidMesh = controller.renderSolidMesh;
 
-                // Nodi
+                // Nodi (ordinati rigorosamente per l'ordine di valutazione CSG top-to-bottom)
                 if (controller.nodes != null)
                 {
-                    foreach (var n in controller.nodes)
+                    var sortedNodes = controller.nodes
+                        .Where(n => n != null)
+                        .OrderBy(n => n.transform.GetSiblingIndex())
+                        .ToList();
+
+                    foreach (var n in sortedNodes)
                     {
-                        if (n == null) continue;
                         var snap = new SdfNodeSnapshot
                         {
                             nodeName = n.gameObject.name,
+                            siblingIndex = n.transform.GetSiblingIndex(),
                             shapeType = n.shapeType,
                             bakedSdfTexture = n.bakedSdfTexture,
                             localPosition = n.transform.localPosition,
@@ -172,12 +179,17 @@ namespace MedicalXR.RayMarching
                 // Volumi Modificatori
                 if (controller.modifierVolumes != null)
                 {
-                    foreach (var m in controller.modifierVolumes)
+                    var sortedMods = controller.modifierVolumes
+                        .Where(m => m != null)
+                        .OrderBy(m => m.transform.GetSiblingIndex())
+                        .ToList();
+
+                    foreach (var m in sortedMods)
                     {
-                        if (m == null) continue;
                         var mSnap = new SdfModifierVolumeSnapshot
                         {
                             volumeName = m.gameObject.name,
+                            siblingIndex = m.transform.GetSiblingIndex(),
                             modifierType = m.modifierType,
                             scope = m.scope,
                             localPosition = m.transform.localPosition,
@@ -294,111 +306,152 @@ namespace MedicalXR.RayMarching
                 // Ricostruzione Nodi
                 if (nodes != null && nodes.Count > 0)
                 {
-                    // Pulisce o adatta i nodi esistenti
                     var existingNodes = controller.GetComponentsInChildren<SdfNode>(true).ToList();
+                    var matchedNodes = new List<SdfNode>();
+                    var unusedExisting = new List<SdfNode>(existingNodes);
 
-                    // Rimuove nodi in eccesso
-                    while (existingNodes.Count > nodes.Count)
-                    {
-                        var toRemove = existingNodes[existingNodes.Count - 1];
-                        existingNodes.RemoveAt(existingNodes.Count - 1);
-#if UNITY_EDITOR
-                        UnityEditor.Undo.DestroyObjectImmediate(toRemove.gameObject);
-#else
-                        UnityEngine.Object.Destroy(toRemove.gameObject);
-#endif
-                    }
-
-                    // Aggiunge nodi mancanti
-                    while (existingNodes.Count < nodes.Count)
-                    {
-                        var newGo = new GameObject("SdfNode");
-                        newGo.transform.SetParent(controller.transform, false);
-                        var newComp = newGo.AddComponent<SdfNode>();
-#if UNITY_EDITOR
-                        UnityEditor.Undo.RegisterCreatedObjectUndo(newGo, "Create Sdf Node");
-#endif
-                        existingNodes.Add(newComp);
-                    }
-
-                    // Assegna proprietà a tutti i nodi
+                    // 1. Assegna o adatta i nodi, preservando l'identità dei GameObject per nome (e relativi Binders)
                     for (int i = 0; i < nodes.Count; i++)
                     {
                         var snap = nodes[i];
-                        var nodeComp = existingNodes[i];
+                        SdfNode targetNode = unusedExisting.FirstOrDefault(en => en != null && en.gameObject.name == snap.nodeName);
+                        if (targetNode != null)
+                        {
+                            unusedExisting.Remove(targetNode);
+                        }
+                        else if (unusedExisting.Count > 0)
+                        {
+                            targetNode = unusedExisting[0];
+                            unusedExisting.RemoveAt(0);
+                        }
+                        else
+                        {
+                            var newGo = new GameObject(snap.nodeName);
+                            newGo.transform.SetParent(controller.transform, false);
+                            targetNode = newGo.AddComponent<SdfNode>();
 #if UNITY_EDITOR
-                        UnityEditor.Undo.RecordObject(nodeComp.gameObject, "Configure Node");
-                        UnityEditor.Undo.RecordObject(nodeComp, "Configure Node");
+                            UnityEditor.Undo.RegisterCreatedObjectUndo(newGo, "Create Sdf Node");
 #endif
-                        nodeComp.gameObject.name = snap.nodeName;
-                        nodeComp.shapeType = snap.shapeType;
-                        nodeComp.bakedSdfTexture = snap.bakedSdfTexture;
-                        nodeComp.transform.localPosition = snap.localPosition;
-                        nodeComp.transform.localEulerAngles = snap.localEulerAngles;
-                        nodeComp.transform.localScale = snap.localScale;
-                        nodeComp.size = snap.size;
-                        nodeComp.combineOp = snap.combineOp;
-                        nodeComp.blendSoftness = snap.blendSoftness;
-                        nodeComp.shapeColor = snap.shapeColor;
-                        nodeComp.pulseSensitivity = snap.pulseSensitivity;
-                        nodeComp.cyclicAmplitude = snap.cyclicAmplitude;
-                        nodeComp.cyclicFrequency = snap.cyclicFrequency;
-                        nodeComp.cyclicAmplitudeMultiplier = snap.cyclicAmplitudeMultiplier;
+                        }
+
+#if UNITY_EDITOR
+                        UnityEditor.Undo.RecordObject(targetNode.gameObject, "Configure Node");
+                        UnityEditor.Undo.RecordObject(targetNode, "Configure Node");
+#endif
+                        targetNode.gameObject.name = snap.nodeName;
+                        targetNode.shapeType = snap.shapeType;
+                        targetNode.bakedSdfTexture = snap.bakedSdfTexture;
+                        targetNode.transform.localPosition = snap.localPosition;
+                        targetNode.transform.localEulerAngles = snap.localEulerAngles;
+                        targetNode.transform.localScale = snap.localScale;
+                        targetNode.size = snap.size;
+                        targetNode.combineOp = snap.combineOp;
+                        targetNode.blendSoftness = snap.blendSoftness;
+                        targetNode.shapeColor = snap.shapeColor;
+                        targetNode.pulseSensitivity = snap.pulseSensitivity;
+                        targetNode.cyclicAmplitude = snap.cyclicAmplitude;
+                        targetNode.cyclicFrequency = snap.cyclicFrequency;
+                        targetNode.cyclicAmplitudeMultiplier = snap.cyclicAmplitudeMultiplier;
+
+                        matchedNodes.Add(targetNode);
                     }
 
-                    controller.nodes = existingNodes;
+                    // 2. Rimuove eventuali nodi in eccesso non presenti nel template
+                    foreach (var excess in unusedExisting)
+                    {
+                        if (excess != null)
+                        {
+#if UNITY_EDITOR
+                            UnityEditor.Undo.DestroyObjectImmediate(excess.gameObject);
+#else
+                            UnityEngine.Object.Destroy(excess.gameObject);
+#endif
+                        }
+                    }
+
+                    // 3. Ripristina rigorosamente l'ordine gerarchico dei SiblingIndex
+                    for (int i = 0; i < matchedNodes.Count; i++)
+                    {
+                        var snap = nodes[i];
+                        int targetSibling = (snap.siblingIndex >= 0) ? snap.siblingIndex : i;
+                        matchedNodes[i].transform.SetSiblingIndex(targetSibling);
+                    }
+
+                    controller.nodes = matchedNodes;
                 }
 
                 // Ricostruzione Volumi Modificatori
                 if (modifierVolumes != null)
                 {
                     var existingMods = controller.GetComponentsInChildren<SdfModifierVolume>(true).ToList();
-
-                    while (existingMods.Count > modifierVolumes.Count)
-                    {
-                        var toRemove = existingMods[existingMods.Count - 1];
-                        existingMods.RemoveAt(existingMods.Count - 1);
-#if UNITY_EDITOR
-                        UnityEditor.Undo.DestroyObjectImmediate(toRemove.gameObject);
-#else
-                        UnityEngine.Object.Destroy(toRemove.gameObject);
-#endif
-                    }
-
-                    while (existingMods.Count < modifierVolumes.Count)
-                    {
-                        var newGo = new GameObject("SdfModifierVolume");
-                        newGo.transform.SetParent(controller.transform, false);
-                        var newComp = newGo.AddComponent<SdfModifierVolume>();
-#if UNITY_EDITOR
-                        UnityEditor.Undo.RegisterCreatedObjectUndo(newGo, "Create Sdf Modifier Volume");
-#endif
-                        existingMods.Add(newComp);
-                    }
+                    var matchedMods = new List<SdfModifierVolume>();
+                    var unusedMods = new List<SdfModifierVolume>(existingMods);
 
                     for (int i = 0; i < modifierVolumes.Count; i++)
                     {
                         var snap = modifierVolumes[i];
-                        var modComp = existingMods[i];
+                        SdfModifierVolume targetMod = unusedMods.FirstOrDefault(em => em != null && em.gameObject.name == snap.volumeName);
+                        if (targetMod != null)
+                        {
+                            unusedMods.Remove(targetMod);
+                        }
+                        else if (unusedMods.Count > 0)
+                        {
+                            targetMod = unusedMods[0];
+                            unusedMods.RemoveAt(0);
+                        }
+                        else
+                        {
+                            var newGo = new GameObject(snap.volumeName);
+                            newGo.transform.SetParent(controller.transform, false);
+                            targetMod = newGo.AddComponent<SdfModifierVolume>();
 #if UNITY_EDITOR
-                        UnityEditor.Undo.RecordObject(modComp.gameObject, "Configure Modifier Volume");
-                        UnityEditor.Undo.RecordObject(modComp, "Configure Modifier Volume");
+                            UnityEditor.Undo.RegisterCreatedObjectUndo(newGo, "Create Sdf Modifier Volume");
 #endif
-                        modComp.gameObject.name = snap.volumeName;
-                        modComp.modifierType = snap.modifierType;
-                        modComp.scope = snap.scope;
-                        modComp.transform.localPosition = snap.localPosition;
-                        modComp.transform.localEulerAngles = snap.localEulerAngles;
-                        modComp.transform.localScale = snap.localScale;
-                        modComp.size = snap.size;
-                        modComp.falloff = snap.falloff;
-                        modComp.strength = snap.strength;
-                        modComp.frequency = snap.frequency;
-                        modComp.gizmoColor = snap.gizmoColor;
+                        }
+
+#if UNITY_EDITOR
+                        UnityEditor.Undo.RecordObject(targetMod.gameObject, "Configure Modifier Volume");
+                        UnityEditor.Undo.RecordObject(targetMod, "Configure Modifier Volume");
+#endif
+                        targetMod.gameObject.name = snap.volumeName;
+                        targetMod.modifierType = snap.modifierType;
+                        targetMod.scope = snap.scope;
+                        targetMod.transform.localPosition = snap.localPosition;
+                        targetMod.transform.localEulerAngles = snap.localEulerAngles;
+                        targetMod.transform.localScale = snap.localScale;
+                        targetMod.size = snap.size;
+                        targetMod.falloff = snap.falloff;
+                        targetMod.strength = snap.strength;
+                        targetMod.frequency = snap.frequency;
+                        targetMod.gizmoColor = snap.gizmoColor;
+
+                        matchedMods.Add(targetMod);
                     }
 
-                    controller.modifierVolumes = existingMods;
+                    foreach (var excess in unusedMods)
+                    {
+                        if (excess != null)
+                        {
+#if UNITY_EDITOR
+                            UnityEditor.Undo.DestroyObjectImmediate(excess.gameObject);
+#else
+                            UnityEngine.Object.Destroy(excess.gameObject);
+#endif
+                        }
+                    }
+
+                    for (int i = 0; i < matchedMods.Count; i++)
+                    {
+                        var snap = modifierVolumes[i];
+                        int targetSibling = (snap.siblingIndex >= 0) ? snap.siblingIndex : (nodes != null ? nodes.Count + i : i);
+                        matchedMods[i].transform.SetSiblingIndex(targetSibling);
+                    }
+
+                    controller.modifierVolumes = matchedMods;
                 }
+
+                controller.SynchronizeHierarchyFromNodesList();
 
                 var rend = controller.GetComponent<Renderer>();
                 if (rend != null && rend.sharedMaterial != null)

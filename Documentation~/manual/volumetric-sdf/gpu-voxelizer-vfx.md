@@ -94,7 +94,24 @@ Raymarching solid surfaces involves calculating ray steps for every pixel on the
 
 ---
 
-## 5. Inspector Reference: `SdfVolumeVoxelizer`
+## 5. Decoupled Per-Node Colors & VFX Blending
+
+<p align="center">
+  <img src="../../images/decoupled_colors_demo.gif" width="55%" alt="Decoupled Per-Node Particle Colors in VFX Graph" />
+  <br><em>In-Engine capture: Two distinct CSG primitives (Infinity loop in magenta, Sphere in cyan) retaining decoupled chromatic identities while blending smoothly in the overlap region.</em>
+</p>
+
+### The Decoupled Chromatic Architecture:
+In complex multi-node organ morphologies, different biological structures require distinct visual identities (e.g. vascular networks vs parenchymal tissue).
+
+* **Previous Bottleneck**: In early iterations, the internal sub-graph `CalculateSdfUvw` bound its `PositionWS` input to a constant vector $(0, 0, 0)$. As a result, all particles across the entire volume evaluated the UVW coordinates of the root node, forcing the entire particle swarm to adopt a uniform color.
+* **World-Space Per-Particle Evaluation**: PulseEngine replaces the fixed constant with `Get Attribute: Position (Space: World)`. Every particle dynamically samples its true continuous 3D coordinate against the node hierarchy's transforms:
+  $$\mathbf{u}_i = \text{WorldToObject}_j \cdot \mathbf{x}_{\text{particle}}$$
+* **Smooth Color Morphing**: In CSG blend zones, polynomial smooth-min weighting smoothly interpolates between node color attributes, producing harmonious chromatic gradients across composite shapes.
+
+---
+
+## 6. Inspector Reference: `SdfVolumeVoxelizer`
 
 <p align="center">
   <img src="../../images/sdf_volume_voxelizer_inspector.png" width="70%" alt="SdfVolumeVoxelizer Inspector" />

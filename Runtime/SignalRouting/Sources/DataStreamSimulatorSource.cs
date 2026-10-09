@@ -79,6 +79,22 @@ namespace GenericDataStreaming
 
         private bool isStreaming;
 
+        void Awake()
+        {
+            if (autoStart)
+            {
+                StartStreaming();
+            }
+        }
+
+        void Start()
+        {
+            if (autoStart)
+            {
+                StartStreaming();
+            }
+        }
+
         void OnEnable()
         {
             if (autoStart)
@@ -160,6 +176,12 @@ namespace GenericDataStreaming
 
         void Update()
         {
+            // Auto-recovery: se autoStart è attivo ma lo streaming si è interrotto (es. domain reload, enter play mode), riavvialo
+            if (!isStreaming && autoStart)
+            {
+                StartStreaming();
+            }
+
             if (!isStreaming || DataStreamRegistry.Instance == null) return;
 
 #if UNITY_EDITOR
@@ -210,18 +232,14 @@ namespace GenericDataStreaming
             float hrvSdnnVal = Mathf.Lerp(hrvSdnnMin, hrvSdnnMax, Mathf.PerlinNoise(t * 0.2f, 42.42f));
             DataStreamRegistry.Instance.PushValue(hrvSdnnChannelId, hrvSdnnVal);
 
-            // 5. Simulazione Battito Cardiaco Ritmico (Trigger Discreto 'heartbeat')
-            // Sincronizzato con la frequenza cardiaca attiva (manuale o interpolata dagli scenari clinici)
-            float currentBpm = (currentScenario == SimulationScenario.Manual) ? simulatedHeartRate : sineVal;
-            if (currentBpm > 10f)
+            // 5. Simulazione Evento Discreto (Battito R-Wave / Heartbeat Trigger)
+            float effectiveBPM = simulatedHeartRate > 0f ? simulatedHeartRate : 75f;
+            float heartbeatInterval = 60f / effectiveBPM;
+            heartbeatTimer += dt;
+            if (heartbeatTimer >= heartbeatInterval)
             {
-                float beatInterval = 60f / currentBpm;
-                heartbeatTimer += dt;
-                if (heartbeatTimer >= beatInterval)
-                {
-                    heartbeatTimer -= beatInterval;
-                    DataStreamRegistry.Instance.PushTrigger("heartbeat");
-                }
+                heartbeatTimer -= heartbeatInterval;
+                DataStreamRegistry.Instance.PushTrigger("heartbeat");
             }
         }
 

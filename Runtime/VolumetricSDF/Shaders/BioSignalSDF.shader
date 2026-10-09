@@ -373,11 +373,6 @@ Shader "MedicalXR/BioSignalSDF"
                     int op_j = (int)_NodeParams[j].y;
                     float k = _NodeParams[j].w;
 
-                    if (k <= 0.0005 && (op_j == 0 || op_j == 4 || op_j == 5))
-                    {
-                        k = _GlobalBlendSoftness;
-                    }
-
                     if (k > 0.0005)
                     {
                         if (op_j == 2 || op_j == 4) // Smooth Subtraction
@@ -500,11 +495,6 @@ Shader "MedicalXR/BioSignalSDF"
 
                     int op_j = (int)_NodeParams[j].y;
                     float k = _NodeParams[j].w;
-
-                    if (k <= 0.0005 && (op_j == 0 || op_j == 4 || op_j == 5))
-                    {
-                        k = _GlobalBlendSoftness;
-                    }
 
                     if (k > 0.0005)
                     {

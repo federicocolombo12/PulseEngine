@@ -24,6 +24,79 @@ namespace MedicalXR.RayMarching
             SdfGroupController controller = (SdfGroupController)target;
 
             EditorGUILayout.Space(15);
+            EditorGUILayout.LabelField("🎬 CSG Sequence & Blend Order (MudBun Top-to-Bottom)", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox("L'ordine qui sotto definisce la fusione CSG: il nodo #1 è la base, e ogni nodo successivo si fonde con quelli sopra di lui. Usa i tasti ▲ e ▼ per riordinare la sequenza: l'ordine viene salvato fedelmente nei Template.", MessageType.Info);
+
+            if (controller.nodes != null && controller.nodes.Count > 0)
+            {
+                for (int i = 0; i < controller.nodes.Count; i++)
+                {
+                    var node = controller.nodes[i];
+                    if (node == null) continue;
+
+                    EditorGUILayout.BeginHorizontal("box");
+
+                    // Indice d'ordine
+                    GUILayout.Label($"#{i + 1}", EditorStyles.boldLabel, GUILayout.Width(26));
+
+                    // Nome e shape come pulsante per selezionarlo
+                    string label = $"{node.gameObject.name} ({node.shapeType})";
+                    if (GUILayout.Button(label, EditorStyles.linkLabel, GUILayout.Width(160)))
+                    {
+                        Selection.activeGameObject = node.gameObject;
+                    }
+
+                    // Operazione e blend softness
+                    GUILayout.Label($"[{node.combineOp}] (Blend: {node.blendSoftness:F2})", EditorStyles.miniLabel);
+
+                    GUILayout.FlexibleSpace();
+
+                    // Pulsanti Sposta Su / Sposta Giù
+                    GUI.enabled = (i > 0);
+                    if (GUILayout.Button("▲", GUILayout.Width(26), GUILayout.Height(20)))
+                    {
+                        Undo.RegisterCompleteObjectUndo(controller, "Reorder Node Up");
+                        Undo.RegisterCompleteObjectUndo(controller.nodes[i].gameObject, "Reorder Node Up");
+                        Undo.RegisterCompleteObjectUndo(controller.nodes[i - 1].gameObject, "Reorder Node Up");
+
+                        var temp = controller.nodes[i];
+                        controller.nodes[i] = controller.nodes[i - 1];
+                        controller.nodes[i - 1] = temp;
+
+                        controller.SynchronizeHierarchyFromNodesList();
+                        EditorUtility.SetDirty(controller);
+                        GUIUtility.ExitGUI();
+                    }
+
+                    GUI.enabled = (i < controller.nodes.Count - 1);
+                    if (GUILayout.Button("▼", GUILayout.Width(26), GUILayout.Height(20)))
+                    {
+                        Undo.RegisterCompleteObjectUndo(controller, "Reorder Node Down");
+                        Undo.RegisterCompleteObjectUndo(controller.nodes[i].gameObject, "Reorder Node Down");
+                        Undo.RegisterCompleteObjectUndo(controller.nodes[i + 1].gameObject, "Reorder Node Down");
+
+                        var temp = controller.nodes[i];
+                        controller.nodes[i] = controller.nodes[i + 1];
+                        controller.nodes[i + 1] = temp;
+
+                        controller.SynchronizeHierarchyFromNodesList();
+                        EditorUtility.SetDirty(controller);
+                        GUIUtility.ExitGUI();
+                    }
+                    GUI.enabled = true;
+
+                    EditorGUILayout.EndHorizontal();
+                }
+
+                if (GUILayout.Button("🔄 Allinea Ordine da Gerarchia", GUILayout.Height(22)))
+                {
+                    Undo.RecordObject(controller, "Sync From Hierarchy");
+                    controller.SynchronizeNodesListFromHierarchy();
+                    EditorUtility.SetDirty(controller);
+                }
+            }
+
+            EditorGUILayout.Space(15);
             EditorGUILayout.LabelField("Template Settings", EditorStyles.boldLabel);
             templateToApply = (SdfEffectTemplate)EditorGUILayout.ObjectField("Template", templateToApply, typeof(SdfEffectTemplate), false);
             if (GUILayout.Button("Apply Template"))

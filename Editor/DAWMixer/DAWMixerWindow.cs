@@ -282,7 +282,11 @@ namespace GenericDataStreaming.EditorScripts
             if (GUILayout.Button(isSim ? "[ Unity Simulator ]" : "Unity Simulator", EditorStyles.miniButtonLeft, GUILayout.Width(120)))
             {
                 if (sim == null && registry != null) sim = Undo.AddComponent<DataStreamSimulatorSource>(registry.gameObject);
-                if (sim != null) sim.enabled = true;
+                if (sim != null)
+                {
+                    sim.enabled = true;
+                    sim.StartStreaming();
+                }
                 if (osc != null) osc.enabled = false;
                 if (ws != null) ws.enabled = false;
                 if (ser != null) ser.enabled = false;
@@ -590,7 +594,7 @@ namespace GenericDataStreaming.EditorScripts
                 {
                     EditorGUILayout.Space(3);
                     GUILayout.Label("Archivio Template di Scena (Nodi, Risoluzione, Canali, Binders e Colori):", EditorStyles.boldLabel);
-                    foreach (var st in cachedSceneTemplates)
+                    foreach (var st in cachedSceneTemplates.ToArray())
                     {
                         if (st == null) continue;
                         bool isActive = (!string.IsNullOrEmpty(activePresetName) && st.name == activePresetName);
@@ -643,6 +647,14 @@ namespace GenericDataStreaming.EditorScripts
                                 Debug.Log($"[DAW Mixer] Template '{preservedName}' sovrascritto con successo con lo stato attuale della scena!");
                             }
                         }
+
+                        GUI.backgroundColor = new Color(0.85f, 0.25f, 0.25f);
+                        if (GUILayout.Button("ELIMINA", GUILayout.Width(75), GUILayout.Height(22)))
+                        {
+                            DeleteTemplate(st);
+                            GUIUtility.ExitGUI();
+                        }
+
                         GUI.backgroundColor = Color.white;
                         EditorGUILayout.EndHorizontal();
                     }
@@ -1127,6 +1139,14 @@ namespace GenericDataStreaming.EditorScripts
                         Debug.Log($"[DAW Mixer] Template '{preservedName}' sovrascritto con successo!");
                     }
                 }
+                // ELIMINA TEMPLATE CORRENTE
+                GUI.backgroundColor = new Color(0.75f, 0.2f, 0.2f);
+                if (GUILayout.Button("🗑️ ELIMINA", GUILayout.Height(24), GUILayout.Width(95)))
+                {
+                    DeleteTemplate(selectedTemplate);
+                    GUIUtility.ExitGUI();
+                }
+                GUI.backgroundColor = Color.white;
             }
 
             // SALVA COME NUOVO
@@ -1140,6 +1160,47 @@ namespace GenericDataStreaming.EditorScripts
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
+        }
+
+        private void DeleteTemplate(MedicalXR.RayMarching.SdfSceneTemplate templateToDelete)
+        {
+            if (templateToDelete == null) return;
+
+            string templateName = templateToDelete.name;
+            string assetPath = AssetDatabase.GetAssetPath(templateToDelete);
+
+            if (EditorUtility.DisplayDialog(
+                "Elimina Template Definitivamente",
+                $"Sei sicuro di voler eliminare definitivamente il template '{templateName}'?\n\nFile: {assetPath}\n\nQuesta operazione non può essere annullata.",
+                "Sì, Elimina",
+                "Annulla"))
+            {
+                if (!string.IsNullOrEmpty(assetPath))
+                {
+                    AssetDatabase.DeleteAsset(assetPath);
+                    AssetDatabase.SaveAssets();
+                }
+
+                if (activePresetName == templateName)
+                {
+                    activePresetName = "";
+                    EditorPrefs.DeleteKey("MedicalXR_ActivePreset");
+                }
+
+                isRenamingActive = false;
+                RefreshTemplates();
+
+                if (cachedSceneTemplates != null && cachedSceneTemplates.Count > 0)
+                {
+                    selectedTemplateIndex = Mathf.Clamp(selectedTemplateIndex, 0, cachedSceneTemplates.Count - 1);
+                }
+                else
+                {
+                    selectedTemplateIndex = 0;
+                }
+
+                Debug.Log($"[DAW Mixer] Template '{templateName}' eliminato con successo dal disco.");
+            }
         }
 
         private void ConfirmInlineRename(MedicalXR.RayMarching.SdfSceneTemplate template, string newName)

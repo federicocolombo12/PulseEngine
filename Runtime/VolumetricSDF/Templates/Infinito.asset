@@ -25,7 +25,7 @@ MonoBehaviour:
   enableMatCap: 0
   matCapTexture: {fileID: 2800000, guid: 68af238e804d4916b3d1c94905ebbda4, type: 3}
   matCapBlend: 0
-  globalBlendSoftness: 0.16672134
+  globalBlendSoftness: 0.5339933
   pulseMultiplier: 0.3
   pulseDecaySpeed: 5
   shaderPulseParam: _RWavePulse
@@ -39,11 +39,11 @@ MonoBehaviour:
     size: {x: 0.24, y: 0.24, z: 0.24}
     combineOp: 0
     blendSoftness: 0
-    shapeColor: {r: 1, g: 0.55, b: 0, a: 1}
+    shapeColor: {r: 0.9574691, g: 0.94112355, b: 0.65381193, a: 1}
     pulseSensitivity: 1.4
     cyclicAmplitude: {x: 0, y: 0, z: 0}
     cyclicFrequency: {x: 1, y: 0, z: 2}
-    cyclicAmplitudeMultiplier: 3.5338104
+    cyclicAmplitudeMultiplier: 1
   modifierVolumes: []
   channels:
   - id: heart_pulse
@@ -102,24 +102,51 @@ MonoBehaviour:
     isSolo: 0
   propertyBinders:
   - channelId: hrv_rmssd
-    targetGameObjectName: SDF_Volume
-    targetComponentType: MedicalXR.RayMarching.SdfGroupController
-    targetPropertyName: globalBlendSoftness
-    weightMultiplier: 1
-    useLocalRemap: 1
-    localRemap: {x: 0.04, y: 0.22}
-  - channelId: heart_pulse
-    targetGameObjectName: SDF_Volume
-    targetComponentType: MedicalXR.RayMarching.SdfGroupController
-    targetPropertyName: continuousPulse
-    weightMultiplier: 1
-    useLocalRemap: 0
-    localRemap: {x: 0, y: 1}
-  - channelId: hrv_rmssd
     targetGameObjectName: VfxCheckme_Target
     targetComponentType: UnityEngine.VFX.VisualEffect
     targetPropertyName: TurbulenceIntensity
     weightMultiplier: 1
     useLocalRemap: 1
     localRemap: {x: 3, y: 0.5}
-  colorBinders: []
+  - channelId: heart_pulse
+    targetGameObjectName: SDF_Volume
+    targetComponentType: MedicalXR.RayMarching.SdfGroupController
+    targetPropertyName: continuousPulse
+    weightMultiplier: 1
+    useLocalRemap: 1
+    localRemap: {x: 0.4, y: 1}
+  colorBinders:
+  - channelId: perfusion_index
+    targetGameObjectName: SdfNode_Spikes
+    targetComponentType: MedicalXR.RayMarching.SdfNode
+    targetPropertyName: shapeColor
+    colorGradient:
+      serializedVersion: 2
+      key0: {r: 0.5801887, g: 1, b: 0.8730201, a: 1}
+      key1: {r: 1, g: 0.9344864, b: 0.6462264, a: 1}
+      key2: {r: 0.5801887, g: 1, b: 0.72110116, a: 0}
+      key3: {r: 0.9794224, g: 0.93769765, b: 0.6498965, a: 0}
+      key4: {r: 0.5801887, g: 1, b: 0.8730201, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 2893
+      ctime1: 14011
+      ctime2: 32451
+      ctime3: 48360
+      ctime4: 62010
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 65535
+      atime2: 0
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_ColorSpace: 0
+      m_NumColorKeys: 5
+      m_NumAlphaKeys: 2

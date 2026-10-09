@@ -12,49 +12,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad4d8bd42479ba94cb1a6f58e86dcfc5, type: 3}
   m_Name: Calma
   m_EditorClassIdentifier: Assembly-CSharp::MedicalXR.RayMarching.SdfSceneTemplate
-  textureResolution: 206
-  volumeSize: 1.7
+  textureResolution: 96
+  volumeSize: 2
   renderSolidMesh: 0
-  albedoTexture: {fileID: 2800000, guid: 18e402c5c8f541edb868fbd88f2c4418, type: 3}
+  albedoTexture: {fileID: 0}
   textureScale: 2
   textureBlend: 0
   triplanarSharpness: 4
   enableBumpMap: 0
-  bumpMap: {fileID: 2800000, guid: b10144ca145f4d8c92fb2e32efcde4c9, type: 3}
+  bumpMap: {fileID: 0}
   bumpScale: 0.5
   enableMatCap: 0
-  matCapTexture: {fileID: 2800000, guid: 68af238e804d4916b3d1c94905ebbda4, type: 3}
+  matCapTexture: {fileID: 0}
   matCapBlend: 0
-  globalBlendSoftness: 0.3596833
-  pulseMultiplier: 0.6
-  pulseDecaySpeed: 2
+  globalBlendSoftness: 0.35
+  pulseMultiplier: 0.8
+  pulseDecaySpeed: 3
   shaderPulseParam: _RWavePulse
   nodes:
-  - nodeName: SdfNode_HypoxicCore
+  - nodeName: SdfNode_CoreSphere
+    siblingIndex: 0
     shapeType: 0
     bakedSdfTexture: {fileID: 0}
-    localPosition: {x: -0.11759049, y: 0, z: -0.11759049}
-    localEulerAngles: {x: -0, y: 0, z: 0}
+    localPosition: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
     localScale: {x: 1, y: 1, z: 1}
-    size: {x: 0.14, y: 0.14, z: 0.14}
+    size: {x: 0.18, y: 0.18, z: 0.18}
     combineOp: 0
     blendSoftness: 0
-    shapeColor: {r: 0.35, g: 0.05, b: 0.45, a: 1}
-    pulseSensitivity: 0.4
-    cyclicAmplitude: {x: 0.08, y: 0, z: 0.08}
-    cyclicFrequency: {x: 1, y: 0, z: 1}
-    cyclicAmplitudeMultiplier: 5.324416
-  - nodeName: SdfNode_Distortion
+    shapeColor: {r: 0, g: 0.85, b: 0.95, a: 1}
+    pulseSensitivity: 0.5
+    cyclicAmplitude: {x: 0.06, y: 0, z: 0.06}
+    cyclicFrequency: {x: 1, y: 0, z: 2}
+    cyclicAmplitudeMultiplier: 1
+  - nodeName: SdfNode_FlowerPetals
+    siblingIndex: 0
     shapeType: 5
-    bakedSdfTexture: {fileID: 11700000, guid: 6170b98c29f0a7345a7a25cfcc3c5b3d, type: 2}
-    localPosition: {x: 0, y: 0.03, z: 0}
-    localEulerAngles: {x: -0, y: 0, z: 0}
+    bakedSdfTexture: {fileID: 11700000, guid: f1b282b539c0d0a4fb40afe693904159, type: 2}
+    localPosition: {x: 0, y: 0.02, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
     localScale: {x: 1, y: 1, z: 1}
-    size: {x: 0.2, y: 0.2, z: 0.2}
+    size: {x: 0.22, y: 0.22, z: 0.22}
     combineOp: 0
-    blendSoftness: 0
-    shapeColor: {r: 0.12, g: 0.18, b: 0.35, a: 1}
-    pulseSensitivity: 0.6
+    blendSoftness: 0.35
+    shapeColor: {r: 0.05, g: 0.45, b: 0.85, a: 1}
+    pulseSensitivity: 1
     cyclicAmplitude: {x: 0, y: 0, z: 0}
     cyclicFrequency: {x: 1, y: 0, z: 2}
     cyclicAmplitudeMultiplier: 0
@@ -73,7 +75,7 @@ MonoBehaviour:
     sourceType: 0
     filterType: 0
     sourceChannelId: 
-    inputRange: {x: 75, y: 100}
+    inputRange: {x: 85, y: 100}
     outputRange: {x: 0, y: 1}
     smoothing: 0.5
     isMuted: 0
@@ -116,26 +118,33 @@ MonoBehaviour:
     isSolo: 0
   propertyBinders:
   - channelId: hrv_rmssd
-    targetGameObjectName: SdfNode_HypoxicCore
+    targetGameObjectName: SdfNode_CoreSphere
     targetComponentType: MedicalXR.RayMarching.SdfNode
     targetPropertyName: cyclicAmplitudeMultiplier
     weightMultiplier: 1
     useLocalRemap: 1
     localRemap: {x: -10, y: 10}
+  - channelId: hrv_rmssd
+    targetGameObjectName: SdfNode_FlowerPetals
+    targetComponentType: MedicalXR.RayMarching.SdfNode
+    targetPropertyName: blendSoftness
+    weightMultiplier: 1
+    useLocalRemap: 1
+    localRemap: {x: 0.25, y: 0.65}
   - channelId: heart_pulse
     targetGameObjectName: SDF_Volume
     targetComponentType: MedicalXR.RayMarching.SdfGroupController
     targetPropertyName: continuousPulse
     weightMultiplier: 1
     useLocalRemap: 1
-    localRemap: {x: 0, y: 0.18}
+    localRemap: {x: 0, y: 0.25}
   - channelId: heart_rate
     targetGameObjectName: VfxCheckme_Target
     targetComponentType: UnityEngine.VFX.VisualEffect
     targetPropertyName: TurbulenceIntensity
     weightMultiplier: 1
     useLocalRemap: 1
-    localRemap: {x: 0.05, y: 0.25}
+    localRemap: {x: 0.15, y: 0.45}
   colorBinders:
   - channelId: spo2
     targetGameObjectName: VfxCheckme_Target
@@ -143,8 +152,8 @@ MonoBehaviour:
     targetPropertyName: Color
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.35, g: 0.05, b: 0.45, a: 1}
-      key1: {r: 0, g: 0.75, b: 0.95, a: 1}
+      key0: {r: 0.05, g: 0.35, b: 0.65, a: 1}
+      key1: {r: 0, g: 0.85, b: 0.95, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}

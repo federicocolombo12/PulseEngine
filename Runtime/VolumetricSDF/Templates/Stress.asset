@@ -13,14 +13,25 @@ MonoBehaviour:
   m_Name: Stress
   m_EditorClassIdentifier: Assembly-CSharp::MedicalXR.RayMarching.SdfSceneTemplate
   textureResolution: 96
-  volumeSize: {x: 2, y: 2, z: 2}
+  volumeSize: 2
   renderSolidMesh: 0
+  albedoTexture: {fileID: 0}
+  textureScale: 2
+  textureBlend: 0
+  triplanarSharpness: 4
+  enableBumpMap: 0
+  bumpMap: {fileID: 0}
+  bumpScale: 0.5
+  enableMatCap: 0
+  matCapTexture: {fileID: 0}
+  matCapBlend: 0
   globalBlendSoftness: 0.08
   pulseMultiplier: 1.6
   pulseDecaySpeed: 5
   shaderPulseParam: _RWavePulse
   nodes:
   - nodeName: SdfNode_StressCore
+    siblingIndex: 0
     shapeType: 0
     bakedSdfTexture: {fileID: 0}
     localPosition: {x: 0, y: 0, z: 0}
@@ -28,12 +39,14 @@ MonoBehaviour:
     localScale: {x: 1, y: 1, z: 1}
     size: {x: 0.15, y: 0.15, z: 0.15}
     combineOp: 0
+    blendSoftness: 0
     shapeColor: {r: 0.95, g: 0.15, b: 0.1, a: 1}
     pulseSensitivity: 0.8
     cyclicAmplitude: {x: 0, y: 0, z: 0}
     cyclicFrequency: {x: 1, y: 0, z: 2}
     cyclicAmplitudeMultiplier: 0
   - nodeName: SdfNode_Spikes
+    siblingIndex: 0
     shapeType: 5
     bakedSdfTexture: {fileID: 11700000, guid: ac22e3fc4d67aec4c9bf0e556ca9f7e0, type: 2}
     localPosition: {x: 0, y: 0, z: 0}
@@ -41,11 +54,13 @@ MonoBehaviour:
     localScale: {x: 1, y: 1, z: 1}
     size: {x: 0.24, y: 0.24, z: 0.24}
     combineOp: 0
+    blendSoftness: 0.08
     shapeColor: {r: 1, g: 0.55, b: 0, a: 1}
     pulseSensitivity: 1.4
     cyclicAmplitude: {x: 0, y: 0, z: 0}
     cyclicFrequency: {x: 1, y: 0, z: 2}
     cyclicAmplitudeMultiplier: 0
+  modifierVolumes: []
   channels:
   - id: heart_rate
     sourceType: 0
@@ -110,9 +125,9 @@ MonoBehaviour:
     useLocalRemap: 1
     localRemap: {x: 3, y: 0.5}
   - channelId: hrv_rmssd
-    targetGameObjectName: SDF_Volume
-    targetComponentType: MedicalXR.RayMarching.SdfGroupController
-    targetPropertyName: globalBlendSoftness
+    targetGameObjectName: SdfNode_Spikes
+    targetComponentType: MedicalXR.RayMarching.SdfNode
+    targetPropertyName: blendSoftness
     weightMultiplier: 1
     useLocalRemap: 1
     localRemap: {x: 0.04, y: 0.22}

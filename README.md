@@ -52,7 +52,8 @@ Built following professional audio production paradigms, it provides a **Virtual
 </p>
 
 ### 🧬 2. Volumetric SDF Engine
-* **Order-Independent CSG**: Smooth Union, Smooth Subtraction, and Smooth Intersection with per-node blend softness.
+* **Order-Independent CSG & Hierarchy Preservation**: Smooth Union, Smooth Subtraction, and Smooth Intersection evaluated sequentially top-to-bottom (MudBun-style). Features live Inspector reordering with `[▲]` / `[▼]` buttons and bidirectional hierarchy synchronization.
+* **Per-Node Blend Softness**: Individual node blending control from knife-sharp cuts ($k=0$) to organic melting ($k > 0$).
 * **Standalone Modifier Volumes**: Force-field style spatial deformers (Twist, Bend, Bounded 3D Noise) with soft falloff margins.
 * **Implicit Surface Texturing**: Seamless triplanar projection in object space, Morten Mikkelsen Surface Gradient normal perturbations, and View-Space MatCap shading.
 * **Live Scene View Editing**: Full `[ExecuteAlways]` support allowing interactive sculpting with native transform gizmos without entering Play Mode.
@@ -66,7 +67,14 @@ Built following professional audio production paradigms, it provides a **Virtual
 ### ⚡ 3. GPU Voxelizer & VFX Graph Integration
 * **Real-Time 3D Texture Generation**: Computes a $128^3$ RGBAHalf signed distance and color volume on the GPU in under 0.8 ms.
 * **Direct VFX Graph Binding**: Feeds distance values (Red channel) for particle adhesion and dynamic colors (Green/Blue/Alpha channels) for cellular tinting.
+* **Decoupled Per-Node Colors & VFX Blending**: Particles sample per-node spatial colors across independent 3D coordinate spaces via `Get Attribute: PositionWS`, allowing multi-object CSG hierarchies (e.g. Infinity loop + Sphere) to maintain distinct chromatic identities that smoothly blend in real time.
 * **Physics-Only Mode (Fill-Rate Decoupling)**: Completely disables solid fragment raymarching on standalone VR headsets (Meta Quest 3), saving up to 100% of screen pixel fill-rate while maintaining full particle physics.
+
+<p align="center">
+  <img src="Documentation~/images/decoupled_colors_demo.gif" width="48%" alt="Decoupled Per-Node Particle Colors" />
+  <img src="Documentation~/images/vfx_swarm_adhesion.gif" width="48%" alt="VFX Swarm Adhesion" />
+  <br><em>Left: <b>Decoupled Per-Node Colors</b> (Infinity in magenta, Sphere in cyan, blending continuously). Right: <b>Particle Swarm Adhesion</b>.</em>
+</p>
 
 <p align="center">
   <img src="Documentation~/images/sdf_volume_voxelizer_inspector.png" width="38%" alt="SdfVolumeVoxelizer Inspector" />

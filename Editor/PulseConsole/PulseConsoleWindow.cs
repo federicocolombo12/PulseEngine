@@ -277,9 +277,9 @@ namespace GenericDataStreaming.EditorScripts
                                     if (captureMethod != null)
                                     {
                                         var snapshot = captureMethod.Invoke(null, new object[] { preservedName });
-                                        if (snapshot != null)
+                                        if (snapshot is UnityEngine.Object uo)
                                         {
-                                            EditorUtility.CopySerialized(snapshot, so);
+                                            EditorUtility.CopySerialized(uo, so);
                                             so.name = preservedName;
                                             EditorUtility.SetDirty(so);
                                             AssetDatabase.SaveAssets();
@@ -868,9 +868,9 @@ namespace GenericDataStreaming.EditorScripts
                                     if (captureMethod != null)
                                     {
                                         var snapshot = captureMethod.Invoke(null, new object[] { preservedName });
-                                        if (snapshot != null)
+                                        if (snapshot is UnityEngine.Object uo)
                                         {
-                                            EditorUtility.CopySerialized(snapshot, so);
+                                            EditorUtility.CopySerialized(uo, so);
                                             so.name = preservedName;
                                             EditorUtility.SetDirty(so);
                                             AssetDatabase.SaveAssets();

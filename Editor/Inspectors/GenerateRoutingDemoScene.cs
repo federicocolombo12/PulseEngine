@@ -13,11 +13,13 @@ namespace MedicalXR.EditorScripts
 {
     public class GenerateRoutingDemoScene : EditorWindow
     {
+        public static void GenerateScene() => GenerateSignalRoutingScene();
+
         [MenuItem("MedicalXR/Generate Signal Routing Demo Scene")]
         public static void GenerateSignalRoutingScene()
         {
             // 1. Create a new empty scene
-            Scene newScene = EditorSceneManager.NewScene(NewSceneSetup.Empty, NewSceneMode.Single);
+            Scene newScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             // 2. Camera Setup
             GameObject camGo = new GameObject("Main Camera");

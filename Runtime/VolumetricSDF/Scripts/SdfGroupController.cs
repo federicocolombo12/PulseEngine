@@ -298,6 +298,7 @@ namespace MedicalXR.RayMarching
                         modifierVolumes.Add(cm);
                     }
                 }
+                SynchronizeNodesListFromHierarchy();
             }
 #endif
 

@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117" />
+      <stop offset="100%" stop-color="#161b22" />
+    </linearGradient>
+
+    <marker id="arrCyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#38bdf8" />
+    </marker>
+    <marker id="arrEmerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399" />
+    </marker>
+    <marker id="arrPurple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc" />
+    </marker>
+  </defs>
+
+  <style>
+    .diagram-bg { fill: url(#bgGrad); stroke: #30363d; stroke-width: 1.5; rx: 12px; }
+    .card-panel { fill: #161b22; stroke: #30363d; stroke-width: 1.2; rx: 8px; }
+    .inner-panel { fill: #0d1117; stroke: #21262d; stroke-width: 1; rx: 6px; }
+    .kicker { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; font-weight: 600; fill: #f0f6fc; }
+    .sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; font-weight: 400; fill: #8b949e; line-height: 1.4; }
+    .code { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 10.5px; fill: #58a6ff; }
+    .pill-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; font-weight: 600; }
+  </style>
+
+  <!-- Background Canvas -->
+  <rect width="960" height="480" class="diagram-bg" />
+
+  <!-- Diagram Header -->
+  <g transform="translate(32, 34)">
+    <text x="0" y="0" class="kicker" fill="#38bdf8">MODULAR COMPANION INTEGRATION TOPOLOGY</text>
+    <text x="0" y="22" class="title" style="font-size: 18px; font-weight: 700;">PulseEngine (Telemetry Router) ⇄ VolumetricSDF (CSG Geometry Engine)</text>
+  </g>
+
+  <!-- LEFT PACKAGE: PULSEENGINE (X: 32, W: 420) -->
+  <g transform="translate(32, 90)">
+    <rect width="420" height="356" class="card-panel" stroke="#0ea5e9" stroke-dasharray="4 2" />
+    <rect x="0" y="0" width="4" height="356" fill="#38bdf8" rx="2" />
+
+    <text x="20" y="24" class="kicker" fill="#38bdf8">PACKAGE 01 • com.federicocolombo.pulseengine</text>
+    <text x="20" y="44" class="title">Telemetry Ingestion &amp; Routing Matrix</text>
+    <text x="20" y="62" class="sub">Decoupled biometric bus, DSP filtering, and reflection binders</text>
+
+    <!-- Sub 1: Ingestion Sources -->
+    <g transform="translate(16, 76)">
+      <rect width="388" height="66" class="inner-panel" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #38bdf8;">Multi-Protocol Ingestion</text>
+      <text x="14" y="36" class="sub">Polar H10 ECG • SpO₂ Pulse-Ox • GSR • OSC UDP • BLE</text>
+      <text x="14" y="52" class="code">DataStreamRegistry: 0-GC Concurrent Thread-Safe Bus</text>
+    </g>
+
+    <!-- Sub 2: DAW Mixer Strip -->
+    <g transform="translate(16, 150)">
+      <rect width="388" height="66" class="inner-panel" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #f59e0b;">DAW Mixer Channel Conditioning</text>
+      <text x="14" y="36" class="sub">Range Remapping [rawMin, rawMax] ➔ [0, 1] • EMA Smoothing</text>
+      <text x="14" y="52" class="sub">Gain, Invert, Noise-Gate, and Metronome Systolic Clock</text>
+    </g>
+
+    <!-- Sub 3: Property Binders -->
+    <g transform="translate(16, 224)">
+      <rect width="388" height="106" class="inner-panel" stroke="#34d399" stroke-width="0.8" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #34d399;">Binding Components</text>
+      
+      <text x="14" y="40" class="code">• DataStreamPropertyBinder&lt;float&gt;</text>
+      <text x="14" y="56" class="sub">Cached reflection injects normalized float directly into field / property</text>
+
+      <text x="14" y="76" class="code">• DataStreamColorBinder</text>
+      <text x="14" y="92" class="sub">Evaluates multi-stop gradient remapped from telemetry channel</text>
+    </g>
+  </g>
+
+  <!-- RIGHT PACKAGE: VOLUMETRICSDF (X: 508, W: 420) -->
+  <g transform="translate(508, 90)">
+    <rect width="420" height="356" class="card-panel" stroke="#a855f7" stroke-dasharray="4 2" />
+    <rect x="0" y="0" width="4" height="356" fill="#c084fc" rx="2" />
+
+    <text x="20" y="24" class="kicker" fill="#c084fc">PACKAGE 02 • com.federicocolombo.volumetricsdf</text>
+    <text x="20" y="44" class="title">CSG Modeling &amp; GPU Voxelizer Engine</text>
+    <text x="20" y="62" class="sub">Mathematical implicit surfaces and real-time 3D texture synthesis</text>
+
+    <!-- Sub 1: SdfGroupController -->
+    <g transform="translate(16, 76)">
+      <rect width="388" height="66" class="inner-panel" stroke="#c084fc" stroke-width="0.8" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #c084fc;">SdfGroupController (CSG Hierarchy)</text>
+      <text x="14" y="36" class="sub">Target Properties: <tspan class="code">currentPulse</tspan>, <tspan class="code">globalBlendSoftness</tspan></text>
+      <text x="14" y="52" class="sub" style="fill:#34d399;">Heartbeat organ systolic pump &amp; Bouba-Kiki soft morphing</text>
+    </g>
+
+    <!-- Sub 2: SdfModifierVolume -->
+    <g transform="translate(16, 150)">
+      <rect width="388" height="66" class="inner-panel" stroke="#38bdf8" stroke-width="0.8" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #38bdf8;">SdfModifierVolume (Force Fields)</text>
+      <text x="14" y="36" class="sub">Target Properties: <tspan class="code">strength</tspan>, <tspan class="code">twistAngle</tspan>, <tspan class="code">noiseScale</tspan></text>
+      <text x="14" y="52" class="sub" style="fill:#fb7185;">Sympathetic stress arousal induces angular torsion &amp; turbulence</text>
+    </g>
+
+    <!-- Sub 3: Compute Voxelizer & VFX -->
+    <g transform="translate(16, 224)">
+      <rect width="388" height="106" class="inner-panel" stroke="#f43f5e" stroke-width="0.8" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #f43f5e;">SdfVolumeVoxelizer &amp; VFX Graph</text>
+      <text x="14" y="38" class="sub">Dispatches 128³ 3D compute grid (2,097,152 voxels at 90 FPS)</text>
+      <text x="14" y="54" class="code">R16_SFloat Distance Field + RGBA32_SFloat Colors</text>
+      <text x="14" y="74" class="sub">Drives Unity VFX Graph particle swarm collision &amp; adhesion</text>
+      <text x="14" y="90" class="sub" style="fill:#34d399; font-size:10px;">Zero GC allocations • Decoupled fill-rate rendering for Meta Quest 3</text>
+    </g>
+  </g>
+
+  <!-- CENTER BRIDGE CONNECTORS -->
+  <!-- Top Bridge: Property Binder -> SdfGroupController -->
+  <path d="M 452 320 C 480 320, 480 176, 506 176" fill="none" stroke="#34d399" stroke-width="2" marker-end="url(#arrEmerald)" />
+  <rect x="444" y="235" width="72" height="18" rx="3" fill="#161b22" stroke="#34d399" stroke-width="0.8" />
+  <text x="448" y="248" class="pill-text" fill="#34d399">Modulation</text>
+
+</svg>

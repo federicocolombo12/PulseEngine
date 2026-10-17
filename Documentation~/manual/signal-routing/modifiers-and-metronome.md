@@ -17,12 +17,9 @@ $$\phi_t = (\phi_{t-1} + \Delta \phi) \pmod{1.0}$$
 
 When the phase $\phi_t$ completes a cycle ($0.0 \to 1.0$), the metronome fires a clean, mathematically perfect pulse trigger (`pulseTriggered`), completely decoupling visual pacing from network delivery lag.
 
-```mermaid
-graph LR
-    A[Bluetooth / OSC Stream] -- "Jittery Bursts" --> B[DataStreamRegistry: BPM Value]
-    B --> C[DataStreamMetronome: Phase Integration]
-    C -- "Flawless Rhythmic Trigger" --> D[VisualEffect / Shader / Audio]
-```
+<p align="center">
+  <img src="../../images/diagrams/metronome_phase_generator.svg" width="100%" alt="DataStreamMetronome and Mathematical Conditioning Pipeline" />
+</p>
 
 ### Double-Precision Time Integration
 > [!NOTE]
@@ -60,9 +57,6 @@ where $\lambda$ is the decay speed constant.
 * **Multiply / Gain**: Amplifies or scales the range.
 * **Remap & Clamp**: Remaps arbitrary input intervals $[A, B]$ to $[C, D]$.
 
-```mermaid
-graph LR
-    Raw[Channel: spo2] --> Mod[MathModifier: Threshold < 90%]
-    Mod --> Derived[New Channel: is_hypoxic (0 or 1)]
-    Derived --> Binders[Tint Particles Cyanotic Blue]
-```
+> [!TIP]
+> **Example Pipeline**: `Raw Channel: spo2` $\longrightarrow$ `DataStreamMathModifier (Threshold < 0.90)` $\longrightarrow$ `Derived Channel: is_hypoxic (0 or 1)` $\longrightarrow$ `DataStreamColorBinder (Tint Particles Cyanotic Blue)`.
+

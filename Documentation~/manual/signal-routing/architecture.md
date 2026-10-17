@@ -6,23 +6,9 @@ The **Signal Routing Architecture** in PulseEngine functions as a real-time, zer
 
 ## High-Level Data Flow
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Source as Telemetry Source (OSC / WS / Serial / Sim)
-    participant Registry as DataStreamRegistry (Central Bus)
-    participant Channel as DataStreamChannel (Normalize & Smooth)
-    participant Mod as Modifiers & Metronome (Insert FX)
-    participant Binder as Property / Color Binder (Reflection)
-    participant Target as Unity Visual (SDF / Shader / VFX Graph)
-
-    Source->>Registry: PushRawValue(channelId, rawValue) [Thread-Safe]
-    Registry->>Channel: Update(deltaTime)
-    Note over Channel: Clamp, Range Map [Min, Max] -> [0, 1], Exponential Smoothing
-    Channel->>Mod: Process Modifiers (Decay / Math / Metronome)
-    Channel->>Binder: Evaluate Normalized Value [0, 1]
-    Binder->>Target: Inject Uniform / Property / Transform Scale
-```
+<p align="center">
+  <img src="../../images/diagrams/pulseengine_architecture.svg" width="100%" alt="PulseEngine System Pipeline and Signal Matrix Architecture" />
+</p>
 
 ---
 

@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 480" width="100%" height="100%">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117" />
+      <stop offset="100%" stop-color="#161b22" />
+    </linearGradient>
+
+    <linearGradient id="roseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f43f5e" />
+      <stop offset="100%" stop-color="#fb7185" />
+    </linearGradient>
+
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d97706" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7c3aed" />
+      <stop offset="100%" stop-color="#c084fc" />
+    </linearGradient>
+
+    <!-- Sleek Arrow Markers -->
+    <marker id="arrowRose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#f43f5e" />
+    </marker>
+    <marker id="arrowSky" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#38bdf8" />
+    </marker>
+    <marker id="arrowEmerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399" />
+    </marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc" />
+    </marker>
+  </defs>
+
+  <style>
+    .diagram-bg { fill: url(#bgGrad); stroke: #30363d; stroke-width: 1.5; rx: 12px; }
+    .card-panel { fill: #161b22; stroke: #30363d; stroke-width: 1.2; rx: 8px; }
+    .kicker { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; font-weight: 600; fill: #f0f6fc; }
+    .body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; font-weight: 400; fill: #8b949e; line-height: 1.4; }
+    .code { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 11px; fill: #58a6ff; }
+    .pill-bg { rx: 4px; }
+    .pill-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; font-weight: 600; }
+  </style>
+
+  <!-- Canvas Background -->
+  <rect width="920" height="480" class="diagram-bg" />
+
+  <!-- Outer Header Title & Badge -->
+  <g transform="translate(32, 34)">
+    <text x="0" y="0" class="kicker" fill="#38bdf8">CLINICAL NEURO-AFFECTIVE BIOFEEDBACK ARCHITECTURE</text>
+    <text x="0" y="22" class="title" style="font-size: 18px; font-weight: 700;">Closed-Loop Interoception &amp; Autonomic Nervous System Regulation</text>
+  </g>
+
+  <!-- STAGE 1: PATIENT IN XR -->
+  <g transform="translate(32, 90)">
+    <rect width="250" height="150" class="card-panel" />
+    <rect x="0" y="0" width="4" height="150" fill="#f43f5e" rx="2" />
+    
+    <text x="20" y="24" class="kicker" fill="#f43f5e">STAGE 01 • SUBJECT</text>
+    <text x="20" y="44" class="title">Patient in Medical XR</text>
+    <text x="20" y="66" class="body">Meta Quest 3 / Vision Pro immersion.</text>
+    <text x="20" y="82" class="body">Sensory interoception focus.</text>
+    
+    <!-- State Pills -->
+    <rect x="20" y="102" width="98" height="22" class="pill-bg" fill="rgba(244, 63, 94, 0.12)" stroke="#f43f5e" stroke-width="0.8" />
+    <text x="28" y="117" class="pill-text" fill="#fb7185">Sympathetic (Kiki)</text>
+
+    <rect x="126" y="102" width="104" height="22" class="pill-bg" fill="rgba(16, 185, 129, 0.12)" stroke="#10b981" stroke-width="0.8" />
+    <text x="134" y="117" class="pill-text" fill="#34d399">Vagal Rest (Bouba)</text>
+  </g>
+
+  <!-- STAGE 2: BIOMETRIC SENSORS -->
+  <g transform="translate(32, 270)">
+    <rect width="250" height="160" class="card-panel" />
+    <rect x="0" y="0" width="4" height="160" fill="#fb7185" rx="2" />
+
+    <text x="20" y="24" class="kicker" fill="#fb7185">STAGE 02 • TELEMETRY</text>
+    <text x="20" y="44" class="title">Wearable Bio-Sensors</text>
+    
+    <circle cx="26" cy="68" r="3" fill="#f43f5e" />
+    <text x="36" y="72" class="body"><tspan class="code" fill="#f0f6fc">Polar H10 ECG</tspan> — Heart Rate &amp; RR-Intervals</text>
+
+    <circle cx="26" cy="92" r="3" fill="#f59e0b" />
+    <text x="36" y="96" class="body"><tspan class="code" fill="#f0f6fc">GSR / EDA</tspan> — Galvanic Skin Conductance</text>
+
+    <circle cx="26" cy="116" r="3" fill="#38bdf8" />
+    <text x="36" y="120" class="body"><tspan class="code" fill="#f0f6fc">Masimo SpO₂</tspan> — Blood Oxygen Saturation</text>
+
+    <circle cx="26" cy="140" r="3" fill="#34d399" />
+    <text x="36" y="144" class="body"><tspan class="code" fill="#f0f6fc">HRV RMSSD</tspan> — Parasympathetic Vagal Tone</text>
+  </g>
+
+  <!-- STAGE 3: PULSEENGINE SIGNAL ROUTER & DAW MIXER -->
+  <g transform="translate(330, 90)">
+    <rect width="260" height="340" class="card-panel" stroke="#0ea5e9" stroke-dasharray="4 2" />
+    <rect x="0" y="0" width="4" height="340" fill="#38bdf8" rx="2" />
+
+    <text x="20" y="26" class="kicker" fill="#38bdf8">CORE ENGINE • PULSEENGINE</text>
+    <text x="20" y="48" class="title">Telemetry Ingestion &amp; DAW</text>
+    <text x="20" y="68" class="body">Zero-GC high-throughput routing matrix.</text>
+
+    <!-- Sub Card: Ingestion Bus -->
+    <g transform="translate(16, 82)">
+      <rect width="228" height="66" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #38bdf8;">DataStreamRegistry (Bus)</text>
+      <text x="14" y="38" class="body" style="font-size: 10px;">Lock-Free Ringbuffer • Atomic Writes</text>
+      <text x="14" y="52" class="code" style="font-size: 10px;">0 Bytes Allocation / Frame (120 Hz)</text>
+    </g>
+
+    <!-- Sub Card: DAW Mixer DSP -->
+    <g transform="translate(16, 160)">
+      <rect width="228" height="76" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #f59e0b;">Virtual DAW Channel Strip</text>
+      <text x="14" y="38" class="body" style="font-size: 10px;">• Exponential Moving Average (EMA Filter)</text>
+      <text x="14" y="52" class="body" style="font-size: 10px;">• Noise Gate, Gain Offset, Curve Remap</text>
+      <text x="14" y="66" class="body" style="font-size: 10px;">• Per-Channel Mute / Solo Monitoring</text>
+    </g>
+
+    <!-- Sub Card: Binders -->
+    <g transform="translate(16, 248)">
+      <rect width="228" height="72" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #34d399;">Property &amp; Color Binders</text>
+      <text x="14" y="38" class="code" style="font-size: 10px;">DataStreamPropertyBinder&lt;float&gt;</text>
+      <text x="14" y="52" class="code" style="font-size: 10px;">DataStreamColorBinder (Gradient)</text>
+      <text x="14" y="66" class="code" style="font-size: 10px;">DataStreamMetronome (BPM Sync)</text>
+    </g>
+  </g>
+
+  <!-- STAGE 4: VOLUMETRICSDF LIVING ORGANISM -->
+  <g transform="translate(638, 90)">
+    <rect width="250" height="340" class="card-panel" />
+    <rect x="0" y="0" width="4" height="340" fill="#c084fc" rx="2" />
+
+    <text x="20" y="26" class="kicker" fill="#c084fc">STAGE 04 • TARGET RENDERER</text>
+    <text x="20" y="48" class="title">VolumetricSDF Organism</text>
+    <text x="20" y="68" class="body">Procedural CSG Implicit Anatomy.</text>
+
+    <!-- Sub Item 1: CSG Geometry -->
+    <g transform="translate(16, 82)">
+      <rect width="218" height="66" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #c084fc;">SdfGroupController</text>
+      <text x="14" y="38" class="body" style="font-size: 10px;">Rhythmic Contraction (Systole/Diastole)</text>
+      <text x="14" y="52" class="body" style="font-size: 10px;">Bouba-Kiki Blend: <tspan class="code" style="font-size:10px;">globalBlendSoftness</tspan></text>
+    </g>
+
+    <!-- Sub Item 2: Modifier Volumes -->
+    <g transform="translate(16, 160)">
+      <rect width="218" height="66" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #38bdf8;">SdfModifierVolume</text>
+      <text x="14" y="38" class="body" style="font-size: 10px;">Sympathetic Arousal Twist &amp; Torsion</text>
+      <text x="14" y="52" class="body" style="font-size: 10px;">High-Frequency Surface Gyroid Noise</text>
+    </g>
+
+    <!-- Sub Item 3: GPU Voxelizer & VFX -->
+    <g transform="translate(16, 238)">
+      <rect width="218" height="82" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1" />
+      <text x="14" y="20" class="title" style="font-size: 12px; fill: #f43f5e;">SdfVolumeVoxelizer &amp; VFX</text>
+      <text x="14" y="38" class="body" style="font-size: 10px;">128³ 3D Texture Compute Grid</text>
+      <text x="14" y="52" class="body" style="font-size: 10px;">Arterial Scarlet ↔ Cyanotic Indigo</text>
+      <text x="14" y="68" class="body" style="font-size: 10px;">Decoupled Fill-Rate (Meta Quest 3)</text>
+    </g>
+  </g>
+
+  <!-- CONNECTORS & FLOW PATHS -->
+
+  <!-- Flow 1: Patient to Sensors (Downward) -->
+  <path d="M 157 240 L 157 266" fill="none" stroke="#f43f5e" stroke-width="2" marker-end="url(#arrowRose)" />
+  <rect x="110" y="244" width="94" height="16" rx="3" fill="#161b22" stroke="#30363d" stroke-width="0.8" />
+  <text x="116" y="256" class="pill-text" fill="#f43f5e">Physical Body</text>
+
+  <!-- Flow 2: Sensors to PulseEngine Bus (Rightward) -->
+  <path d="M 282 350 C 306 350, 306 200, 326 200" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrowSky)" />
+  <rect x="264" y="258" width="86" height="18" rx="3" fill="#161b22" stroke="#38bdf8" stroke-width="0.8" />
+  <text x="270" y="271" class="pill-text" fill="#38bdf8">Raw Packets</text>
+
+  <!-- Flow 3: PulseEngine to VolumetricSDF (Rightward) -->
+  <path d="M 590 260 L 634 260" fill="none" stroke="#34d399" stroke-width="2" marker-end="url(#arrowEmerald)" />
+  <rect x="580" y="240" width="68" height="18" rx="3" fill="#161b22" stroke="#34d399" stroke-width="0.8" />
+  <text x="586" y="253" class="pill-text" fill="#34d399">Modulation</text>
+
+  <!-- Flow 4: Volumetric Organism back to Patient (Closed Loop Arch, Top) -->
+  <path d="M 763 90 C 763 32, 157 32, 157 86" fill="none" stroke="#c084fc" stroke-width="2.2" stroke-dasharray="6 4" marker-end="url(#arrowPurple)" />
+  
+  <!-- Pill along loop -->
+  <g transform="translate(366, 18)">
+    <rect width="200" height="24" rx="12" fill="#161b22" stroke="#c084fc" stroke-width="1.2" />
+    <circle cx="16" cy="12" r="4" fill="#c084fc" />
+    <text x="28" y="16" class="pill-text" fill="#e9d5ff">Visual Interoceptive Feedback</text>
+  </g>
+
+</svg>

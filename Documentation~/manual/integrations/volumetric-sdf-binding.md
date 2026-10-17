@@ -6,38 +6,9 @@
 
 ## 1. System Topology
 
-```mermaid
-graph LR
-    subgraph PulseEngine Ingestion
-        A[Wearable Sensors / OSC Bridge]
-        B[DataStreamRegistry Bus]
-        C[DAW Mixer Console]
-    end
-
-    subgraph Dynamic Modulation
-        D[DataStreamPropertyBinder]
-        E[DataStreamColorBinder]
-    end
-
-    subgraph VolumetricSDF Output
-        F[SdfGroupController]
-        G[SdfModifierVolume]
-        H[SdfVolumeVoxelizer]
-        I[Unity VFX Graph]
-    end
-
-    A --> B
-    B --> C
-    C --> D
-    C --> E
-    D -- "heart_rate -> currentPulse" --> F
-    D -- "hrv_rmssd -> blendSoftness" --> F
-    D -- "stress_level -> twistStrength" --> G
-    E -- "spo2 -> colorGradient" --> H
-    F --> H
-    G --> H
-    H --> I
-```
+<p align="center">
+  <img src="../../images/diagrams/companion_integration_bridge.svg" width="100%" alt="Modular Companion Integration Topology between PulseEngine and VolumetricSDF" />
+</p>
 
 ---
 

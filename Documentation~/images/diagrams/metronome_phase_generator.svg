@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117" />
+      <stop offset="100%" stop-color="#161b22" />
+    </linearGradient>
+
+    <marker id="arrAmber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#f59e0b" />
+    </marker>
+    <marker id="arrRose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#f43f5e" />
+    </marker>
+    <marker id="arrCyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#38bdf8" />
+    </marker>
+  </defs>
+
+  <style>
+    .diagram-bg { fill: url(#bgGrad); stroke: #30363d; stroke-width: 1.5; rx: 12px; }
+    .card-panel { fill: #161b22; stroke: #30363d; stroke-width: 1.2; rx: 8px; }
+    .inner-panel { fill: #0d1117; stroke: #21262d; stroke-width: 1; rx: 6px; }
+    .kicker { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13.5px; font-weight: 600; fill: #f0f6fc; }
+    .sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; font-weight: 400; fill: #8b949e; line-height: 1.4; }
+    .code { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 10px; fill: #58a6ff; }
+  </style>
+
+  <!-- Background -->
+  <rect width="900" height="420" class="diagram-bg" />
+
+  <!-- Header -->
+  <g transform="translate(32, 34)">
+    <text x="0" y="0" class="kicker" fill="#f59e0b">TEMPORAL INTEGRATION &amp; SIGNAL SHAPING</text>
+    <text x="0" y="22" class="title" style="font-size: 18px; font-weight: 700;">DataStreamMetronome &amp; Mathematical Conditioning Modifiers</text>
+  </g>
+
+  <!-- SECTION 1: METRONOME PHASE INTEGRATION (Top: Y: 86, H: 140) -->
+  <g transform="translate(32, 86)">
+    <rect width="836" height="145" class="card-panel" />
+    <rect x="0" y="0" width="4" height="145" fill="#f43f5e" rx="2" />
+
+    <text x="18" y="22" class="kicker" fill="#f43f5e">SUBSYSTEM 01 • RHYTHMIC TIMING</text>
+    <text x="18" y="40" class="title">DataStreamMetronome: Anti-Jitter Cardiac Beat Generator</text>
+
+    <!-- Block A: Jittery Input -->
+    <g transform="translate(18, 54)">
+      <rect width="230" height="74" class="inner-panel" />
+      <text x="12" y="18" class="title" style="font-size: 11.5px; fill: #f43f5e;">Jittery Packet Bursts</text>
+      <text x="12" y="34" class="sub">Bluetooth / OSC network lag</text>
+      <text x="12" y="48" class="code">BPM value: 72.0</text>
+      <text x="12" y="62" class="sub" style="font-size: 9.5px; fill: #8b949e;">Intermittent delta delays</text>
+    </g>
+
+    <!-- Block B: Double Precision Phase -->
+    <g transform="translate(290, 54)">
+      <rect width="260" height="74" class="inner-panel" stroke="#f59e0b" stroke-width="0.8" />
+      <text x="12" y="18" class="title" style="font-size: 11.5px; fill: #f59e0b;">Double-Precision Phase Integrator</text>
+      <text x="12" y="34" class="code" style="fill:#fbbf24;">Δφ = (BPM / 60) * Δt</text>
+      <text x="12" y="48" class="code" style="fill:#fbbf24;">φ = (φ + Δφ) % 1.0</text>
+      <text x="12" y="64" class="sub" style="font-size: 9.5px; fill: #34d399;">Zero floating point drift over days</text>
+    </g>
+
+    <!-- Block C: Perfect Trigger Output -->
+    <g transform="translate(590, 54)">
+      <rect width="230" height="74" class="inner-panel" stroke="#34d399" stroke-width="0.8" />
+      <text x="12" y="18" class="title" style="font-size: 11.5px; fill: #34d399;">Deterministic Beat Trigger</text>
+      <text x="12" y="34" class="sub">Fires on phase wraparound</text>
+      <text x="12" y="48" class="code">pulseTriggered.Invoke()</text>
+      <text x="12" y="62" class="sub" style="font-size: 9.5px; fill: #38bdf8;">Systolic scale bounce &amp; haptics</text>
+    </g>
+
+    <!-- Arrows -->
+    <path d="M 248 91 L 288 91" fill="none" stroke="#f43f5e" stroke-width="1.8" marker-end="url(#arrRose)" />
+    <path d="M 550 91 L 588 91" fill="none" stroke="#f59e0b" stroke-width="1.8" marker-end="url(#arrAmber)" />
+  </g>
+
+  <!-- SECTION 2: MATHEMATICAL CONDITIONING MODIFIER (Bottom: Y: 248, H: 140) -->
+  <g transform="translate(32, 248)">
+    <rect width="836" height="145" class="card-panel" />
+    <rect x="0" y="0" width="4" height="145" fill="#38bdf8" rx="2" />
+
+    <text x="18" y="22" class="kicker" fill="#38bdf8">SUBSYSTEM 02 • SIGNAL DERIVATION</text>
+    <text x="18" y="40" class="title">DataStreamMathModifier: In-Place Boolean &amp; Continuous Transformation</text>
+
+    <!-- Mod Block A: Continuous Channel -->
+    <g transform="translate(18, 54)">
+      <rect width="230" height="74" class="inner-panel" />
+      <text x="12" y="18" class="title" style="font-size: 11.5px; fill: #38bdf8;">Raw Telemetry Stream</text>
+      <text x="12" y="34" class="sub">Continuous biomarker value</text>
+      <text x="12" y="48" class="code">Channel: spo2 (88.5%)</text>
+      <text x="12" y="62" class="code">Channel: hrv_rmssd (18 ms)</text>
+    </g>
+
+    <!-- Mod Block B: Math Modifier Kernel -->
+    <g transform="translate(290, 54)">
+      <rect width="260" height="74" class="inner-panel" stroke="#38bdf8" stroke-width="0.8" />
+      <text x="12" y="18" class="title" style="font-size: 11.5px; fill: #38bdf8;">Conditioning Kernel</text>
+      <text x="12" y="34" class="sub">• Threshold: (val &lt; 0.90) ➔ 1.0 or 0.0</text>
+      <text x="12" y="48" class="sub">• Invert: 1.0 - val (Sympathetic tone)</text>
+      <text x="12" y="64" class="sub">• Gain &amp; Offset Remapping</text>
+    </g>
+
+    <!-- Mod Block C: Derived Output -->
+    <g transform="translate(590, 54)">
+      <rect width="230" height="74" class="inner-panel" stroke="#c084fc" stroke-width="0.8" />
+      <text x="12" y="18" class="title" style="font-size: 11.5px; fill: #c084fc;">Derived Control Signals</text>
+      <text x="12" y="34" class="code" style="fill:#fb7185;">Channel: is_hypoxic (0 or 1)</text>
+      <text x="12" y="48" class="code" style="fill:#a855f7;">Channel: stress_index [0, 1]</text>
+      <text x="12" y="62" class="sub" style="font-size: 9.5px; fill: #34d399;">Binds to VFX Graph &amp; Shaders</text>
+    </g>
+
+    <!-- Arrows -->
+    <path d="M 248 91 L 288 91" fill="none" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrCyan)" />
+    <path d="M 550 91 L 588 91" fill="none" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrCyan)" />
+  </g>
+
+</svg>

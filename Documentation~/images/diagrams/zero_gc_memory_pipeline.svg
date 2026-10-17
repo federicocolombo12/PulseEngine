@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117" />
+      <stop offset="100%" stop-color="#161b22" />
+    </linearGradient>
+
+    <marker id="arrCyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#38bdf8" />
+    </marker>
+    <marker id="arrEmerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34d399" />
+    </marker>
+  </defs>
+
+  <style>
+    .diagram-bg { fill: url(#bgGrad); stroke: #30363d; stroke-width: 1.5; rx: 12px; }
+    .card-panel { fill: #161b22; stroke: #30363d; stroke-width: 1.2; rx: 8px; }
+    .inner-panel { fill: #0d1117; stroke: #21262d; stroke-width: 1; rx: 6px; }
+    .kicker { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13.5px; font-weight: 600; fill: #f0f6fc; }
+    .sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; font-weight: 400; fill: #8b949e; line-height: 1.4; }
+    .code { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 10px; fill: #58a6ff; }
+  </style>
+
+  <!-- Canvas -->
+  <rect width="900" height="380" class="diagram-bg" />
+
+  <!-- Header -->
+  <g transform="translate(32, 34)">
+    <text x="0" y="0" class="kicker" fill="#34d399">RUNTIME MEMORY ARCHITECTURE • MEDICAL XR SPEC</text>
+    <text x="0" y="22" class="title" style="font-size: 18px; font-weight: 700;">Zero-GC High-Frequency Ingestion &amp; Thread-Safe Ringbuffer</text>
+  </g>
+
+  <!-- THREAD 1: ASYNC NETWORK THREAD (Left: 32, W: 240) -->
+  <g transform="translate(32, 86)">
+    <rect width="240" height="260" class="card-panel" />
+    <rect x="0" y="0" width="4" height="260" fill="#38bdf8" rx="2" />
+
+    <text x="16" y="24" class="kicker" fill="#38bdf8">BACKGROUND WORKER</text>
+    <text x="16" y="44" class="title">Network I/O Thread</text>
+    <text x="16" y="62" class="sub">Decoupled from Unity Player Loop</text>
+
+    <g transform="translate(12, 78)">
+      <rect width="216" height="66" class="inner-panel" />
+      <text x="12" y="20" class="title" style="font-size: 12px; fill: #38bdf8;">Inbound UDP / OSC</text>
+      <text x="12" y="36" class="sub">High-frequency packets (&gt; 250 Hz)</text>
+      <text x="12" y="52" class="code">CheckmeOscReceiver / WS</text>
+    </g>
+
+    <g transform="translate(12, 154)">
+      <rect width="216" height="92" class="inner-panel" stroke="#38bdf8" stroke-width="0.8" />
+      <text x="12" y="20" class="title" style="font-size: 12px; fill: #38bdf8;">Pre-Allocated Ringbuffer</text>
+      <text x="12" y="38" class="sub">• Lock-free concurrent circular queue</text>
+      <text x="12" y="54" class="sub">• Fixed memory footprint (4 KB buffer)</text>
+      <text x="12" y="72" class="code" style="fill:#34d399;">Zero heap re-allocation</text>
+    </g>
+  </g>
+
+  <!-- THREAD 2: UNITY MAIN THREAD (Right: 310, W: 558) -->
+  <g transform="translate(310, 86)">
+    <rect width="558" height="260" class="card-panel" stroke="#34d399" stroke-dasharray="4 2" />
+    <rect x="0" y="0" width="4" height="260" fill="#34d399" rx="2" />
+
+    <text x="20" y="24" class="kicker" fill="#34d399">MAIN PLAYER LOOP</text>
+    <text x="20" y="44" class="title">Unity Main Thread Update Loop (90 / 120 FPS)</text>
+    <text x="20" y="62" class="sub">Strict 0.0 B GC allocations during frame evaluation</text>
+
+    <!-- Sub 1: Registry -->
+    <g transform="translate(16, 78)">
+      <rect width="160" height="168" class="inner-panel" stroke="#34d399" stroke-width="0.8" />
+      <text x="12" y="20" class="title" style="font-size: 12px; fill: #34d399;">DataStreamRegistry</text>
+      <text x="12" y="40" class="sub">Central bus singleton</text>
+      <text x="12" y="60" class="sub">• Struct-based channels</text>
+      <text x="12" y="80" class="sub">• Contiguous arrays</text>
+      <text x="12" y="100" class="sub">• Non-allocating loop</text>
+      <text x="12" y="126" class="code">0 B GC / Frame</text>
+      <text x="12" y="148" class="sub" style="font-size:9.5px; fill:#38bdf8;">Direct index lookup</text>
+    </g>
+
+    <!-- Sub 2: In-Place Math Filter -->
+    <g transform="translate(190, 78)">
+      <rect width="170" height="168" class="inner-panel" stroke="#f59e0b" stroke-width="0.8" />
+      <text x="12" y="20" class="title" style="font-size: 12px; fill: #f59e0b;">In-Place DSP Math</text>
+      <text x="12" y="40" class="sub">DataStreamChannel</text>
+      <text x="12" y="60" class="sub">• EMA filter calculation</text>
+      <text x="12" y="80" class="sub">• Range remap [0, 1]</text>
+      <text x="12" y="100" class="sub">• Peak detection logic</text>
+      <text x="12" y="126" class="code">Primitive value types</text>
+      <text x="12" y="148" class="sub" style="font-size:9.5px; fill:#fbbf24;">No boxing operations</text>
+    </g>
+
+    <!-- Sub 3: Cached Reflection -->
+    <g transform="translate(374, 78)">
+      <rect width="168" height="168" class="inner-panel" stroke="#c084fc" stroke-width="0.8" />
+      <text x="12" y="20" class="title" style="font-size: 12px; fill: #c084fc;">Cached Reflection</text>
+      <text x="12" y="40" class="sub">DataStreamPropertyBinder</text>
+      <text x="12" y="60" class="sub">• Cached FieldInfo/ID</text>
+      <text x="12" y="80" class="sub">• Fast delegate setter</text>
+      <text x="12" y="100" class="sub">• Material.SetFloat()</text>
+      <text x="12" y="126" class="code">Direct GPU injection</text>
+      <text x="12" y="148" class="sub" style="font-size:9.5px; fill:#34d399;">Zero runtime overhead</text>
+    </g>
+  </g>
+
+  <!-- CONNECTOR: Inter-Thread Memory Bridge -->
+  <path d="M 272 216 L 310 216" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrCyan)" />
+
+</svg>

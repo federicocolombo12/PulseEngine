@@ -8,15 +8,9 @@ Maintaining a zero-allocation runtime is mandatory in Extended Reality (XR) and 
 
 ## 1. Architectural Strategies for Zero-GC Runtime
 
-```mermaid
-graph LR
-    A["Inbound Network Packet (UDP/OSC)"] --> B["Async Worker Thread"]
-    B --> C["Pre-Allocated Ring Buffer"]
-    C --> D["DataStreamRegistry (Non-Allocating Structs)"]
-    D --> E["DataStreamChannel (In-Place Math)"]
-    E --> F["Cached Binder Reflection Delegates"]
-    F --> G["Target Properties (0 B GC)"]
-```
+<p align="center">
+  <img src="../../images/diagrams/zero_gc_memory_pipeline.svg" width="100%" alt="Zero-GC High-Frequency Ingestion and Thread-Safe Ringbuffer Architecture" />
+</p>
 
 ### 1. Pre-Allocated Ring Buffers
 UDP and OSC packets are decoded in a background worker thread (`CheckmeOscReceiver` / `DataStreamOscSource`) into a pre-allocated byte buffer. No string concatenations or boxing operations take place on the main thread.

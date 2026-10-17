@@ -21,10 +21,10 @@
     ],
     "output": "_site",
     "globalMetadata": {
-      "_appTitle": "PulseEngine | Medical XR Telemetry & Procedural Volumetric Engine",
+      "_appTitle": "PulseEngine | Medical XR Telemetry & Virtual DAW Mixer",
       "_appName": "PulseEngine",
-      "_appLogoPath": "images/daw_channel_strip.png",
-      "_appFaviconPath": "images/daw_channel_strip.png",
+      "_appLogoPath": "images/pulse_logo.svg",
+      "_appFaviconPath": "images/pulse_logo.svg",
       "_enableSearch": true,
       "_gitContribute": {
         "repo": "https://github.com/federicocolombo12/PulseEngine",

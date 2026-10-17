@@ -18,45 +18,9 @@ Originally engineered for clinical trauma biofeedback in Extended Reality (XR) a
 
 ## Core Architectural Pillars
 
-```mermaid
-graph LR
-    subgraph Signal Ingestion
-        A[OSC / UDP]
-        B[WebSockets]
-        C[Serial / USB]
-        D[Internal Simulators]
-    end
-
-    subgraph PulseEngine Core
-        E[DataStreamRegistry]
-        F[DAW Mixer Console]
-        G[Modifiers & Metronome]
-        H[Reflection Binders]
-    end
-
-    subgraph Modulated Targets
-        I[Materials & Shader Graph]
-        J[Transforms & Hierarchy]
-        K[Lights & Environment]
-        L[Audio Sources & Filters]
-        M[Unity VFX Graph]
-        N[Companion: VolumetricSDF]
-    end
-
-    A --> E
-    B --> E
-    C --> E
-    D --> E
-    E --> F
-    F --> G
-    G --> H
-    H --> I
-    H --> J
-    H --> K
-    H --> L
-    H --> M
-    H --> N
-```
+<p align="center">
+  <img src="images/diagrams/pulseengine_architecture.svg" width="100%" alt="PulseEngine System Pipeline and Signal Matrix Architecture" />
+</p>
 
 ### 1. High-Performance Virtual DAW Mixer
 * **Hardware-Style Console (`DAWMixerWindow`)**: Direct visual mixing with vertical channel strips, interactive faders, hardware OLED oscilloscopes, VU meters, and engine-level Mute/Solo.

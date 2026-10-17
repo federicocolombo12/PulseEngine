@@ -12,20 +12,10 @@ By translating invisible autonomic biosignals into an interactive, organic 3D or
 * When the patient relaxes (activating parasympathetic vagal tone), the organism expands, softens, and harmonizes.
 * When the patient enters stress or hyperarousal (sympathetic flight-or-fight), the organism contracts, hardens, and becomes turbulent.
 
-```mermaid
-graph LR
-    subgraph Patient Interception
-        Patient[Patient in VR Headset]
-        Sensors[Biometric Sensors: ECG, SpO2, HRV]
-    end
+<p align="center">
+  <img src="../../images/diagrams/clinical_interoception_loop.svg" width="100%" alt="Closed-Loop Interoceptive Biofeedback Architecture" />
+</p>
 
-    subgraph PulseEngine Mapping
-        Sensors --> Router[PulseEngine Signal Router]
-        Router --> Organism[Procedural Volumetric Organism]
-    end
-
-    Organism -. "Visual Interoceptive Feedback" .-> Patient
-```
 
 ---
 

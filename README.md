@@ -8,11 +8,15 @@
 [![VFX Graph](https://img.shields.io/badge/VFX%20Graph-17%2B-orange.svg)](https://unity.com/visual-effect-graph)
 [![Meta Quest 3 Verified](https://img.shields.io/badge/Meta%20Quest%203-72%2F90Hz%20Verified-brightgreen.svg)](https://www.meta.com/quest/quest-3/)
 [![Zero-GC Runtime](https://img.shields.io/badge/Runtime%20GC-0%20Bytes%2Fframe-success.svg)](#performance--benchmarks)
+[![Documentation: Online](https://img.shields.io/badge/Documentation-GitHub%20Pages-brightgreen.svg?logo=github)](https://federicocolombo12.github.io/PulseEngine/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 
 ---
 
 ## 🌟 Overview
+
+> 📖 **Full Technical Documentation & Architecture Manual**:  
+> Explore guides, benchmarks, and interactive diagrams at **[federicocolombo12.github.io/PulseEngine](https://federicocolombo12.github.io/PulseEngine/)**
 
 **PulseEngine** bridges continuous telemetry streams with high-end real-time computer graphics. 
 

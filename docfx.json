@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
+  "build": {
+    "content": [
+      {
+        "files": [
+          "**.md",
+          "**/toc.yml",
+          "toc.yml"
+        ],
+        "src": "Documentation~"
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**"
+        ],
+        "src": "Documentation~"
+      }
+    ],
+    "output": "_site",
+    "globalMetadata": {
+      "_appTitle": "PulseEngine | Medical XR Telemetry & Procedural Volumetric Engine",
+      "_appName": "PulseEngine",
+      "_appLogoPath": "images/daw_channel_strip.png",
+      "_appFaviconPath": "images/daw_channel_strip.png",
+      "_enableSearch": true,
+      "_gitContribute": {
+        "repo": "https://github.com/federicocolombo12/PulseEngine",
+        "branch": "main"
+      }
+    },
+    "template": [
+      "default",
+      "modern"
+    ]
+  }
+}

@@ -34,21 +34,28 @@ graph LR
         H[Reflection Binders]
     end
 
-    subgraph Visual & Physical Output
-        I[GPU Raymarching Shader]
-        J[Compute Shader Voxelizer]
-        K[Unity VFX Graph]
-        L[Standard Shaders / Transforms]
+    subgraph Modulated Targets
+        I[Materials & Shader Graph]
+        J[Transforms & Hierarchy]
+        K[Lights & Environment]
+        L[Audio Sources & Filters]
+        M[Unity VFX Graph]
+        N[Companion: VolumetricSDF]
     end
 
-    SignalIngestion --> E
+    A --> E
+    B --> E
+    C --> E
+    D --> E
     E --> F
     F --> G
     G --> H
     H --> I
     H --> J
-    J --> K
+    H --> K
     H --> L
+    H --> M
+    H --> N
 ```
 
 ### 1. High-Performance Virtual DAW Mixer
@@ -57,11 +64,10 @@ graph LR
 * **Automatic Signal Discovery**: Inbound signal sniffer that inspects incoming telemetry, detects unknown packets, and provisions calibrated channels automatically.
 * **Network Anti-Jitter Metronome**: Converts clustered, irregular network data packets into smooth rhythmic triggers with continuous mathematical phase integration.
 
-### 2. Procedural Volumetric Engine (SDF & GPU Voxelizer)
-* **Real-Time URP Raymarching**: CSG solid geometry evaluation (Sphere, Box, Torus, Cylinder, Capsule) with order-independent *Smooth Union*, *Smooth Subtraction*, and *Smooth Intersection*.
-* **Standalone Modifier Volumes**: Localized domain warping (Twist, Bend, 3D Noise) with falloff gizmos, operating like spatial force fields on any intersecting geometry.
-* **GPU 3D Texture Voxelizer**: Asynchronous Compute Shader pipeline generating dynamic `RGBAHalf` distance/color textures dispatched directly to Unity VFX Graph.
-* **Fill-Rate Decoupling ("Physics-Only Mode")**: Completely disables costly solid fragment raymarching on mobile XR headsets (such as Meta Quest 3), retaining 100% volumetric particle physics collision at zero pixel-fill overhead.
+### 2. Universal Parameter & Visual Binders
+* **Non-Intrusive Component Modulation**: `DataStreamPropertyBinder` and `DataStreamColorBinder` attach to any GameObject and modulate target properties with custom local remap ranges and weight multipliers.
+* **Multi-Domain Targeting**: Directly controls Materials & Custom Shaders (Emission, Albedo), Transforms (Position, Rotation, Scale), Lights, Audio cutoffs, and VFX Graph blackboard properties with zero boilerplate code.
+* **Modular Companion Integration**: Pairs seamlessly with the **[VolumetricSDF](https://github.com/federicocolombo12/VolumetricSDF)** companion package to drive real-time procedural CSG shapes, bounded modifier volumes, and GPU particle swarms.
 
 ---
 

@@ -14,7 +14,9 @@ namespace MedicalXR.EditorScripts
         {
             EditorApplication.delayCall += () =>
             {
-                if (!System.IO.File.Exists("Assets/_Core/SDFTemplate/Calma.asset"))
+                // Only generate if no scene templates are found in project or packages
+                string[] guids = AssetDatabase.FindAssets("t:SdfSceneTemplate");
+                if (guids == null || guids.Length == 0)
                 {
                     GenerateAll();
                 }
@@ -35,20 +37,32 @@ namespace MedicalXR.EditorScripts
             Debug.Log("[GenerateClinicalTemplates] I 3 Template Clinici ('Calma', 'Stress', 'Ipossia') sono stati generati con successo!");
         }
 
-        private static void EnsureDirectory(string path)
+        private static void EnsureDirectory(string relativeAssetPath)
         {
-            if (!AssetDatabase.IsValidFolder(path))
+            if (string.IsNullOrEmpty(relativeAssetPath)) return;
+
+            string fullPath = System.IO.Path.Combine(Application.dataPath, relativeAssetPath.StartsWith("Assets/") ? relativeAssetPath.Substring(7) : (relativeAssetPath.StartsWith("Assets") ? relativeAssetPath.Substring(6) : relativeAssetPath));
+            if (!System.IO.Directory.Exists(fullPath))
             {
-                string[] parts = path.Split('/');
-                string current = parts[0];
-                for (int i = 1; i < parts.Length; i++)
+                System.IO.Directory.CreateDirectory(fullPath);
+                AssetDatabase.Refresh();
+            }
+
+            if (!AssetDatabase.IsValidFolder(relativeAssetPath))
+            {
+                string[] parts = relativeAssetPath.Split(new char[] { '/', '\\' }, System.StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 0)
                 {
-                    string next = current + "/" + parts[i];
-                    if (!AssetDatabase.IsValidFolder(next))
+                    string current = parts[0];
+                    for (int i = 1; i < parts.Length; i++)
                     {
-                        AssetDatabase.CreateFolder(current, parts[i]);
+                        string next = current + "/" + parts[i];
+                        if (!AssetDatabase.IsValidFolder(next))
+                        {
+                            AssetDatabase.CreateFolder(current, parts[i]);
+                        }
+                        current = next;
                     }
-                    current = next;
                 }
             }
         }
@@ -66,8 +80,10 @@ namespace MedicalXR.EditorScripts
             template.pulseDecaySpeed = 3.0f;
             template.shaderPulseParam = "_RWavePulse";
 
-            // Nodi SDF (Sfera + Fiore organico da Assets/_Core/VFX/3fiore2.asset)
-            var texFiore = AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/VFX/3fiore2.asset");
+            // Nodi SDF (Sfera + Fiore organico)
+            var texFiore = AssetDatabase.LoadAssetAtPath<Texture3D>("Packages/com.federicocolombo.pulseengine/Runtime/VolumetricSDF/Textures/Baked3D/3fiore2.asset")
+                        ?? AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/RayMarching/Textures/Baked3D/3fiore2.asset")
+                        ?? AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/VFX/3fiore2.asset");
             
             template.nodes = new List<SdfNodeSnapshot>
             {
@@ -194,8 +210,10 @@ namespace MedicalXR.EditorScripts
             template.pulseDecaySpeed = 5.0f;
             template.shaderPulseParam = "_RWavePulse";
 
-            // Nodi SDF (Sfera + Spuntoni da Assets/_Core/VFX/1spuntone.asset)
-            var texSpuntone = AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/VFX/1spuntone.asset");
+            // Nodi SDF (Sfera + Spuntoni)
+            var texSpuntone = AssetDatabase.LoadAssetAtPath<Texture3D>("Packages/com.federicocolombo.pulseengine/Runtime/VolumetricSDF/Textures/Baked3D/1spuntone.asset")
+                           ?? AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/RayMarching/Textures/Baked3D/1spuntone.asset")
+                           ?? AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/VFX/1spuntone.asset");
 
             template.nodes = new List<SdfNodeSnapshot>
             {
@@ -308,9 +326,13 @@ namespace MedicalXR.EditorScripts
             template.pulseDecaySpeed = 2.0f;
             template.shaderPulseParam = "_RWavePulse";
 
-            // Nodi SDF (Sfera + Curva/Infinito da Assets/_Core/VFX/4curvaunita2.asset)
-            var texCurva = AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/VFX/4curvaunita2.asset") 
-                         ?? AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/VFX/6infinito2.asset");
+            // Nodi SDF (Sfera + Curva/Infinito)
+            var texCurva = AssetDatabase.LoadAssetAtPath<Texture3D>("Packages/com.federicocolombo.pulseengine/Runtime/VolumetricSDF/Textures/Baked3D/4curvaunita2.asset")
+                        ?? AssetDatabase.LoadAssetAtPath<Texture3D>("Packages/com.federicocolombo.pulseengine/Runtime/VolumetricSDF/Textures/Baked3D/6infinito2.asset")
+                        ?? AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/RayMarching/Textures/Baked3D/4curvaunita2.asset")
+                        ?? AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/RayMarching/Textures/Baked3D/6infinito2.asset")
+                        ?? AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/VFX/4curvaunita2.asset") 
+                        ?? AssetDatabase.LoadAssetAtPath<Texture3D>("Assets/_Core/VFX/6infinito2.asset");
 
             template.nodes = new List<SdfNodeSnapshot>
             {

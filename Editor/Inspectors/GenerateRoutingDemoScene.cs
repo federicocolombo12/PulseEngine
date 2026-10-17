@@ -156,14 +156,41 @@ namespace MedicalXR.EditorScripts
 
             // 9. Save Scene
             string path = "Assets/_Core/DataStreaming/Scenes";
-            if (!AssetDatabase.IsValidFolder(path))
-            {
-                AssetDatabase.CreateFolder("Assets/_Core/DataStreaming", "Scenes");
-            }
+            EnsureDirectory(path);
             string scenePath = path + "/DataStreamRoutingDemo.unity";
             EditorSceneManager.SaveScene(newScene, scenePath);
 
             Debug.Log($"[MedicalXR] DataStream Routing Demo Scene generated at {scenePath}");
+        }
+
+        private static void EnsureDirectory(string relativeAssetPath)
+        {
+            if (string.IsNullOrEmpty(relativeAssetPath)) return;
+
+            string fullPath = System.IO.Path.Combine(Application.dataPath, relativeAssetPath.StartsWith("Assets/") ? relativeAssetPath.Substring(7) : (relativeAssetPath.StartsWith("Assets") ? relativeAssetPath.Substring(6) : relativeAssetPath));
+            if (!System.IO.Directory.Exists(fullPath))
+            {
+                System.IO.Directory.CreateDirectory(fullPath);
+                AssetDatabase.Refresh();
+            }
+
+            if (!AssetDatabase.IsValidFolder(relativeAssetPath))
+            {
+                string[] parts = relativeAssetPath.Split(new char[] { '/', '\\' }, System.StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 0)
+                {
+                    string current = parts[0];
+                    for (int i = 1; i < parts.Length; i++)
+                    {
+                        string next = current + "/" + parts[i];
+                        if (!AssetDatabase.IsValidFolder(next))
+                        {
+                            AssetDatabase.CreateFolder(current, parts[i]);
+                        }
+                        current = next;
+                    }
+                }
+            }
         }
     }
 }

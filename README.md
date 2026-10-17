@@ -1,7 +1,7 @@
 # PulseEngine 🫀⚡
 
-> **High-Performance Virtual DAW Mixer & Procedural Volumetric Engine for Unity 6**  
-> Connect real-time telemetry (biometric sensors, network sockets, audio, simulators) directly to procedural Signed Distance Fields (SDFs) and massive GPU particle swarms.
+> **High-Performance Virtual DAW Mixer & Real-Time Telemetry Routing Engine for Unity 6**  
+> Connect real-time telemetry (biometric sensors, network sockets, audio, simulators) directly to Unity components, shaders, particle swarms, and companion procedural engines.
 
 [![Unity 6000.0+](https://img.shields.io/badge/Unity-6000.0%2B-blue.svg?logo=unity)](https://unity.com/)
 [![URP 17+](https://img.shields.io/badge/Render%20Pipeline-URP%2017%2B-purple.svg)](https://unity.com/srp/universal-render-pipeline)
@@ -58,49 +58,30 @@ Built following professional audio production paradigms, it provides a **Virtual
   <img src="Documentation~/images/daw_channel_strip.png" width="30%" alt="Individual Channel Strip Closeup" />
 </p>
 
-### 🧬 2. Volumetric SDF Engine
-* **Order-Independent CSG & Hierarchy Preservation**: Smooth Union, Smooth Subtraction, and Smooth Intersection evaluated sequentially top-to-bottom (MudBun-style). Features live Inspector reordering with `[▲]` / `[▼]` buttons and bidirectional hierarchy synchronization.
-* **Per-Node Blend Softness**: Individual node blending control from knife-sharp cuts ($k=0$) to organic melting ($k > 0$).
-* **Standalone Modifier Volumes**: Force-field style spatial deformers (Twist, Bend, Bounded 3D Noise) with soft falloff margins.
-* **Implicit Surface Texturing**: Seamless triplanar projection in object space, Morten Mikkelsen Surface Gradient normal perturbations, and View-Space MatCap shading.
-* **Live Scene View Editing**: Full `[ExecuteAlways]` support allowing interactive sculpting with native transform gizmos without entering Play Mode.
+### ⚡ 2. Zero-GC Telemetry Bus & Signal Processing
+* **Allocation-Free Dispatching**: Thread-safe `DataStreamRegistry` operates with strictly **0 Bytes GC allocation per frame**, executing at full target XR framerate ($72\text{ Hz} / 90\text{ Hz} / 120\text{ Hz}$).
+* **Multi-Stage Mathematical Filtering**:
+  * **Adaptive Low-Pass**: Exponential moving smoothing ($y_t = y_{t-1} + \alpha (x_t - y_{t-1})$) eliminating sensor quantization noise.
+  * **Spike Rejection**: Threshold-based outlier clipping guarding against loose electrode or wireless transmission dropouts.
+  * **Anti-Jitter Metronome (`SineWavePulse`)**: Converts irregular network packets into continuous rhythmic phase oscillators ($\sin(\phi)$) with continuous phase integration across delta time.
+* **Multi-Protocol Ingestion**: Native decoupled support for **OSC (Open Sound Control)**, UDP sockets, WebSockets, Serial COM ports, and internal scenario simulators.
 
-<p align="center">
-  <img src="Documentation~/images/sdf_group_controller_inspector.png" width="32%" alt="SdfGroupController Inspector" />
-  <img src="Documentation~/images/sdf_node_inspector.png" width="32%" alt="SdfNode Inspector" />
-  <img src="Documentation~/images/biosignal_sdf_material_inspector.png" width="32%" alt="BioSignalSDF Material Inspector" />
-</p>
+### 🔌 3. Universal Parameter & Visual Binders
+`PulseEngine` is completely modular and drives **any component in Unity** without writing boilerplate code:
+* **Materials & Shaders**: Modulate Albedo, Emission colors, Fresnel intensity, and custom Shader Graph blackboard properties via `DataStreamPropertyBinder` and `DataStreamColorBinder`.
+* **Transforms**: Smoothly scale, rotate, and displace scene objects with customizable weight multipliers and local remap curves.
+* **Lights & Environment**: Sync room illumination, point light intensity, and volumetric fog density with patient respiration or heartbeat.
+* **Audio Sources**: Modulate volume, pitch, and low-pass filter cutoff frequencies based on autonomic stress telemetry.
+* **Unity VFX Graph**: Direct binding to VFX Graph blackboard floats, vectors, and color gradients (e.g. Turbulence, Spawn Rate, Particle Lifetime).
 
-### ⚡ 3. GPU Voxelizer & VFX Graph Integration
-* **Real-Time 3D Texture Generation**: Computes a $128^3$ RGBAHalf signed distance and color volume on the GPU in under 0.8 ms.
-* **Direct VFX Graph Binding**: Feeds distance values (Red channel) for particle adhesion and dynamic colors (Green/Blue/Alpha channels) for cellular tinting.
-* **Decoupled Per-Node Colors & VFX Blending**: Particles sample per-node spatial colors across independent 3D coordinate spaces via `Get Attribute: PositionWS`, allowing multi-object CSG hierarchies (e.g. Infinity loop + Sphere) to maintain distinct chromatic identities that smoothly blend in real time.
-* **Physics-Only Mode (Fill-Rate Decoupling)**: Completely disables solid fragment raymarching on standalone VR headsets (Meta Quest 3), saving up to 100% of screen pixel fill-rate while maintaining full particle physics.
+### 🧬 4. Modular Ecosystem: VolumetricSDF Companion
+While `PulseEngine` is domain-agnostic and drives standard Unity objects, lights, and materials, it pairs seamlessly with our dedicated procedural volumetric engine:
 
-<p align="center">
-  <img src="Documentation~/images/decoupled_colors_demo.gif" width="48%" alt="Decoupled Per-Node Particle Colors" />
-  <img src="Documentation~/images/vfx_swarm_adhesion.gif" width="48%" alt="VFX Swarm Adhesion" />
-  <br><em>Left: <b>Decoupled Per-Node Colors</b> (Infinity in magenta, Sphere in cyan, blending continuously). Right: <b>Particle Swarm Adhesion</b>.</em>
-</p>
+👉 **[VolumetricSDF](https://github.com/federicocolombo12/VolumetricSDF)** (`com.federicocolombo.volumetricsdf`)
 
-<p align="center">
-  <img src="Documentation~/images/sdf_volume_voxelizer_inspector.png" width="38%" alt="SdfVolumeVoxelizer Inspector" />
-  <img src="Documentation~/images/vfx_graph_blackboard.png" width="28%" alt="VFX Graph Blackboard" />
-  <img src="Documentation~/images/vfx_graph_sdf_blocks.png" width="30%" alt="VFX Graph Attractor Blocks" />
-</p>
-
-### 🧠 4. Affective Biofeedback & Cross-Modal Perception (The Bouba-Kiki Paradigm)
-* **Cross-Modal Cognitive Grounding**: Grounded in the cross-modal neurological Bouba/Kiki effect (Ramachandran & Hubbard, 2001; Köhler, 1929) and Polyvagal Theory in collaboration with **Politecnico di Torino** and **Lemons in the Room**.
-* **Visceral Somatic Mirroring**: Translates autonomic nervous system arousal into intuitive volumetric morphology in real time:
-  * **Bouba (Parasympathetic / Low Arousal)**: High HRV RMSSD and calm cardiac rhythms melt primitives into bulbous, soothing, smooth-curved topologies with gentle luminescent particle adhesion.
-  * **Kiki (Sympathetic / High Arousal)**: Low HRV and adrenergic fight-or-flight spikes warp geometry into acute, jagged, high-frequency star protrusions with energetic turbulence.
-
-<p align="center">
-  <img src="Documentation~/images/scenario_bouba.gif" width="32%" alt="Bouba Morphology (Parasympathetic Calm)" />
-  <img src="Documentation~/images/bouba_kiki_morph.gif" width="32%" alt="Real-Time Bouba-Kiki Morphing" />
-  <img src="Documentation~/images/scenario_kiki.gif" width="32%" alt="Kiki Morphology (Sympathetic Stress)" />
-  <br><em>Real in-engine capture: Left: <b>Bouba</b> (smooth bulbous lobes, parasympathetic rest). Center: <b>Dynamic Transition</b> (continuous real-time morphological morphing). Right: <b>Kiki</b> (acute star spikes, sympathetic fight-or-flight arousal).</em>
-</p>
+* **Procedural Geometry Control**: Route `heart_rate` directly into `SdfGroupController.currentPulse` for rhythmic anatomical expansion and contraction.
+* **Affective Morphology**: Route `hrv_rmssd` into `globalBlendSoftness` to morph smoothly between rounded parasympathetic topologies (**Bouba**) and angular sympathetic spikes (**Kiki**).
+* **Physics & VFX Adhesion**: Feed GPU voxelized signed distance volumes into VFX Graph swarms with decoupled world-space chromatic evaluation.
 
 ---
 

@@ -1,8 +1,8 @@
 {
   "name": "com.federicocolombo.pulseengine",
   "version": "1.0.0",
-  "displayName": "PulseEngine: Signal Routing & Volumetric VFX",
-  "description": "High-performance virtual DAW mixer and real-time signal routing console for Unity, paired with a GPU Signed Distance Field (SDF) raymarching and VFX Graph voxelization engine.",
+  "displayName": "PulseEngine: Signal Routing & Telemetry Bus",
+  "description": "High-performance real-time telemetry bus and signal routing console (Pulse Console) for Unity, featuring multi-protocol ingestion (OSC, WebSocket, Serial, Simulators), modular signal modifiers, and universal property/color binders.",
   "unity": "6000.0",
   "unityRelease": "0b1",
   "documentationUrl": "https://github.com/federicocolombo12/PulseEngine/blob/main/Documentation~/index.md",
@@ -10,17 +10,14 @@
   "licensesUrl": "https://github.com/federicocolombo12/PulseEngine/blob/main/LICENSE.md",
   "keywords": [
     "signal-routing",
-    "daw-mixer",
-    "sdf",
-    "signed-distance-field",
-    "raymarching",
-    "vfx-graph",
-    "volumetric",
+    "telemetry",
+    "pulse-console",
     "biofeedback",
     "medical-xr",
     "osc",
     "websocket",
-    "compute-shader"
+    "serial",
+    "vfx-graph"
   ],
   "author": {
     "name": "Federico Colombo",
@@ -35,13 +32,13 @@
   },
   "samples": [
     {
-      "displayName": "01 Signal Routing & DAW Demo",
-      "description": "Quickstart demo showing virtual signal patching, real-time wave generators, and dynamic visual binders.",
+      "displayName": "01 Signal Routing Demo",
+      "description": "Standalone quickstart demo showing virtual telemetry patching, real-time waveform generators, and dynamic visual binders.",
       "path": "Samples~/01_SignalRoutingDemo"
     },
     {
       "displayName": "02 Clinical Biofeedback Suite",
-      "description": "Flagship medical XR sample showcasing physiological ECG/SpO2/HRV stress biofeedback morphing procedural volumetric anatomy.",
+      "description": "Recommended companion sample pairing PulseEngine with VolumetricSDF for physiological biofeedback sculpting.",
       "path": "Samples~/02_ClinicalBiofeedback"
     }
   ]

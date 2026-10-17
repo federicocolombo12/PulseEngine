@@ -21,7 +21,7 @@ namespace MedicalXR.EditorScripts
             }
         }
 
-        [MenuItem("MedicalXR/Toggle Tutorial Overlay Canvas")]
+        // [MenuItem("MedicalXR/Toggle Tutorial Overlay Canvas")] - Purged to keep top-level menus clean
         public static void ToggleCanvas()
         {
             var canvas = GameObject.Find("Welcome_Canvas");
@@ -44,7 +44,7 @@ namespace MedicalXR.EditorScripts
                 Undo.RecordObject(canvas, "Toggle Welcome Canvas");
                 canvas.SetActive(!canvas.activeSelf);
                 EditorUtility.SetDirty(canvas);
-                Debug.Log($"[MedicalXR] Welcome_Canvas ora è: {(canvas.activeSelf ? "VISIBILE" : "NASCOSTO")}");
+                Debug.Log($"[Pulse Console] Welcome_Canvas ora è: {(canvas.activeSelf ? "VISIBILE" : "NASCOSTO")}");
             }
         }
 
@@ -59,7 +59,7 @@ namespace MedicalXR.EditorScripts
                     if (textComp != null)
                     {
                         Undo.RecordObject(textComp, "Update Tutorial Text");
-                        textComp.text = "MedicalXR Bio-Feedback Engine\n\n1. Open 'MedicalXR -> DAW Mixer' to manage data routing.\n2. Choose protocol: Unity Simulator, OSC / Checkme, WebSocket, Serial.\n3. Switch clinical scenarios (Calma, Stress, Ipossia) or apply Scene Templates.";
+                        textComp.text = "MedicalXR Bio-Feedback Engine\n\n1. Open 'MedicalXR -> Pulse Console' to manage data routing.\n2. Choose protocol: Unity Simulator, OSC / Checkme, WebSocket, Serial.\n3. Switch clinical scenarios (Calma, Stress, Ipossia) or apply Scene Templates.";
                         textComp.verticalOverflow = VerticalWrapMode.Overflow;
                         EditorUtility.SetDirty(textComp);
                     }

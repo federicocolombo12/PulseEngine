@@ -7,7 +7,7 @@ using MedicalXR.Checkme;
 
 namespace GenericDataStreaming.EditorScripts
 {
-    public class DAWMixerWindow : EditorWindow
+    public class PulseConsoleWindow : EditorWindow
     {
         // ── DAW Theme & Styling ─────────────────────────────────────────────
         public static class DAWTheme
@@ -62,8 +62,72 @@ namespace GenericDataStreaming.EditorScripts
         private Dictionary<string, float> channelPeakHold = new Dictionary<string, float>();
         private Dictionary<string, double> channelPeakHoldTime = new Dictionary<string, double>();
         
-        // Templates
-        private List<MedicalXR.RayMarching.SdfSceneTemplate> cachedSceneTemplates;
+        // Dynamic Reflection Helpers for Optional Companion (VolumetricSDF)
+        private static System.Type sdfSceneTemplateType = null;
+        private static bool hasCheckedSdfType = false;
+        public static System.Type SdfSceneTemplateType
+        {
+            get
+            {
+                if (!hasCheckedSdfType)
+                {
+                    hasCheckedSdfType = true;
+                    sdfSceneTemplateType = System.Type.GetType("MedicalXR.RayMarching.SdfSceneTemplate, MedicalXR.VolumetricSDF");
+                    if (sdfSceneTemplateType == null)
+                    {
+                        foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
+                        {
+                            var t = assembly.GetType("MedicalXR.RayMarching.SdfSceneTemplate");
+                            if (t != null) { sdfSceneTemplateType = t; break; }
+                        }
+                    }
+                }
+                return sdfSceneTemplateType;
+            }
+        }
+        public static bool IsVolumetricSdfInstalled => SdfSceneTemplateType != null;
+
+        private static System.Type benchmarkRunnerType = null;
+        private static bool hasCheckedBenchmarkType = false;
+        public static System.Type BenchmarkRunnerType
+        {
+            get
+            {
+                if (!hasCheckedBenchmarkType)
+                {
+                    hasCheckedBenchmarkType = true;
+                    benchmarkRunnerType = System.Type.GetType("MedicalXR.RayMarching.MedicalXRBenchmarkRunner, MedicalXR.VolumetricSDF");
+                    if (benchmarkRunnerType == null)
+                    {
+                        foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
+                        {
+                            var t = assembly.GetType("MedicalXR.RayMarching.MedicalXRBenchmarkRunner");
+                            if (t != null) { benchmarkRunnerType = t; break; }
+                        }
+                    }
+                }
+                return benchmarkRunnerType;
+            }
+        }
+        public static bool IsBenchmarkAvailable => BenchmarkRunnerType != null;
+
+        // Unified Presets Model
+        public class ConsolePresetItem
+        {
+            public string Name;
+            public string Category;
+            public bool IsSdf;
+            public ScriptableObject Asset;
+            public string SummaryText;
+            public System.Action Apply;
+            public System.Action Overwrite;
+            public System.Action Delete;
+            public System.Action<string> Rename;
+        }
+
+        private List<DataStreamSceneTemplate> cachedStreamTemplates = new List<DataStreamSceneTemplate>();
+        private List<ScriptableObject> cachedSdfTemplates = new List<ScriptableObject>();
+        private List<ConsolePresetItem> allPresets = new List<ConsolePresetItem>();
         private bool showTemplates = false;
 
         // Sniffer
@@ -71,7 +135,6 @@ namespace GenericDataStreaming.EditorScripts
 
         // Benchmark
         private bool showBenchmark = false;
-        private List<MedicalXR.RayMarching.BenchmarkResultEntry> cachedBenchmarkResults;
 
         // Wizard State per channel
         private Dictionary<string, bool> wizardOpen = new Dictionary<string, bool>();
@@ -94,10 +157,10 @@ namespace GenericDataStreaming.EditorScripts
         }
         private static CopiedBinderData clipboardBinder;
 
-        [MenuItem("MedicalXR/DAW Mixer")]
+        [MenuItem("MedicalXR/Pulse Console")]
         public static void ShowWindow()
         {
-            var window = GetWindow<DAWMixerWindow>("DAW Mixer");
+            var window = GetWindow<PulseConsoleWindow>("Pulse Console");
             window.minSize = new Vector2(800, 600);
             window.Show();
         }
@@ -126,27 +189,120 @@ namespace GenericDataStreaming.EditorScripts
 
         private void RefreshTemplates()
         {
-            cachedSceneTemplates = new List<MedicalXR.RayMarching.SdfSceneTemplate>();
-            string[] sceneGuids = AssetDatabase.FindAssets("t:SdfSceneTemplate");
-            foreach (string guid in sceneGuids)
+            allPresets.Clear();
+
+            // 1. Native DataStreamSceneTemplates
+            cachedStreamTemplates = new List<DataStreamSceneTemplate>();
+            string[] streamGuids = AssetDatabase.FindAssets("t:DataStreamSceneTemplate");
+            foreach (string guid in streamGuids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                var st = AssetDatabase.LoadAssetAtPath<MedicalXR.RayMarching.SdfSceneTemplate>(path);
-                if (st != null && !cachedSceneTemplates.Contains(st))
+                var st = AssetDatabase.LoadAssetAtPath<DataStreamSceneTemplate>(path);
+                if (st != null && !cachedStreamTemplates.Contains(st))
                 {
                     if (string.IsNullOrEmpty(st.name))
                     {
                         st.name = System.IO.Path.GetFileNameWithoutExtension(path);
                     }
-                    cachedSceneTemplates.Add(st);
+                    cachedStreamTemplates.Add(st);
+
+                    allPresets.Add(new ConsolePresetItem
+                    {
+                        Name = st.name,
+                        Category = "Stream",
+                        IsSdf = false,
+                        Asset = st,
+                        SummaryText = $"Canali: {st.channels.Count} | Triggers: {st.registeredTriggers.Count} | Binders: {st.propertyBinders.Count + st.colorBinders.Count + st.triggerBinders.Count} | Modifiers: {st.decayTriggers.Count + st.mathModifiers.Count + st.metronomes.Count}",
+                        Apply = () => {
+                            st.ApplyToScene();
+                            activePresetName = st.name;
+                            EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
+                        },
+                        Overwrite = () => {
+                            if (EditorUtility.DisplayDialog("Sovrascrivi Template", $"Vuoi davvero sovrascrivere il template '{st.name}' con lo stato attuale della scena?", "Sì, Sovrascrivi", "Annulla"))
+                            {
+                                string preservedName = st.name;
+                                var snapshot = DataStreamSceneTemplate.CaptureCurrentScene(preservedName);
+                                EditorUtility.CopySerialized(snapshot, st);
+                                st.name = preservedName;
+                                EditorUtility.SetDirty(st);
+                                AssetDatabase.SaveAssets();
+                                activePresetName = preservedName;
+                                EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
+                                RefreshTemplates();
+                                Debug.Log($"[Pulse Console] Template DataStream '{preservedName}' sovrascritto con successo!");
+                            }
+                        },
+                        Delete = () => DeleteGenericTemplate(st),
+                        Rename = (newName) => ConfirmGenericRename(st, newName)
+                    });
                 }
             }
 
-            if (!string.IsNullOrEmpty(activePresetName) && cachedSceneTemplates != null)
+            // 2. Companion SdfSceneTemplates (if VolumetricSDF package is installed)
+            cachedSdfTemplates = new List<ScriptableObject>();
+            if (IsVolumetricSdfInstalled)
             {
-                for (int i = 0; i < cachedSceneTemplates.Count; i++)
+                string[] sdfGuids = AssetDatabase.FindAssets("t:SdfSceneTemplate");
+                foreach (string guid in sdfGuids)
                 {
-                    if (cachedSceneTemplates[i] != null && cachedSceneTemplates[i].name == activePresetName)
+                    string path = AssetDatabase.GUIDToAssetPath(guid);
+                    var so = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+                    if (so != null && !cachedSdfTemplates.Contains(so))
+                    {
+                        if (string.IsNullOrEmpty(so.name))
+                        {
+                            so.name = System.IO.Path.GetFileNameWithoutExtension(path);
+                        }
+                        cachedSdfTemplates.Add(so);
+
+                        allPresets.Add(new ConsolePresetItem
+                        {
+                            Name = so.name,
+                            Category = "SDF CSG",
+                            IsSdf = true,
+                            Asset = so,
+                            SummaryText = "Companion Volumetric SDF Scenario (Raymarching + CSG)",
+                            Apply = () => {
+                                var method = so.GetType().GetMethod("ApplyToScene", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                                method?.Invoke(so, null);
+                                activePresetName = so.name;
+                                EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
+                            },
+                            Overwrite = () => {
+                                if (EditorUtility.DisplayDialog("Sovrascrivi Template", $"Vuoi davvero sovrascrivere lo scenario SDF '{so.name}' con lo stato attuale della scena?", "Sì, Sovrascrivi", "Annulla"))
+                                {
+                                    string preservedName = so.name;
+                                    var captureMethod = so.GetType().GetMethod("CaptureCurrentScene", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                                    if (captureMethod != null)
+                                    {
+                                        var snapshot = captureMethod.Invoke(null, new object[] { preservedName });
+                                        if (snapshot != null)
+                                        {
+                                            EditorUtility.CopySerialized(snapshot, so);
+                                            so.name = preservedName;
+                                            EditorUtility.SetDirty(so);
+                                            AssetDatabase.SaveAssets();
+                                            activePresetName = preservedName;
+                                            EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
+                                            RefreshTemplates();
+                                            Debug.Log($"[Pulse Console] Scenario SDF '{preservedName}' sovrascritto con successo!");
+                                        }
+                                    }
+                                }
+                            },
+                            Delete = () => DeleteGenericTemplate(so),
+                            Rename = (newName) => ConfirmGenericRename(so, newName)
+                        });
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(activePresetName) && allPresets.Count > 0)
+            {
+                for (int i = 0; i < allPresets.Count; i++)
+                {
+                    if (allPresets[i] != null && allPresets[i].Name == activePresetName)
                     {
                         selectedTemplateIndex = i;
                         break;
@@ -576,25 +732,22 @@ namespace GenericDataStreaming.EditorScripts
             {
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("Refresh List", GUILayout.Width(100))) RefreshTemplates();
-                if (GUILayout.Button("Rigenera Template Base", GUILayout.Width(160)))
-                {
-                    if (EditorUtility.DisplayDialog("Rigenera Template Base", "ATTENZIONE: Questo comando ripristinerà i 3 template clinici base (Calma, Stress, Ipossia). I file esistenti verranno sovrascritti. Vuoi procedere?", "Sì, Procedi", "Annulla"))
-                    {
-                        MedicalXR.EditorScripts.GenerateClinicalTemplates.GenerateAll();
-                        RefreshTemplates();
-                    }
-                }
                 GUI.backgroundColor = DAWTheme.ElectricCyan;
-                if (GUILayout.Button("➕ Salva Scena come Nuovo Template", GUILayout.Height(22))) SaveCurrentSceneAsTemplate();
+                if (GUILayout.Button("➕ Salva come Nuovo DataStream Template", GUILayout.Height(22))) SaveCurrentSceneAsStreamTemplate();
+                if (IsVolumetricSdfInstalled)
+                {
+                    GUI.backgroundColor = DAWTheme.EmeraldZen;
+                    if (GUILayout.Button("➕ Salva come Nuovo SDF Template", GUILayout.Height(22))) SaveCurrentSceneAsSdfTemplate();
+                }
                 GUI.backgroundColor = Color.white;
                 EditorGUILayout.EndHorizontal();
-                
-                // 1. Full Scene Templates
-                if (cachedSceneTemplates != null && cachedSceneTemplates.Count > 0)
+
+                // 1. Native DataStream Templates
+                EditorGUILayout.Space(3);
+                GUILayout.Label("Archivio Template Routing Telemetria (PulseEngine DataStream):", EditorStyles.boldLabel);
+                if (cachedStreamTemplates != null && cachedStreamTemplates.Count > 0)
                 {
-                    EditorGUILayout.Space(3);
-                    GUILayout.Label("Archivio Template di Scena (Nodi, Risoluzione, Canali, Binders e Colori):", EditorStyles.boldLabel);
-                    foreach (var st in cachedSceneTemplates.ToArray())
+                    foreach (var st in cachedStreamTemplates.ToArray())
                     {
                         if (st == null) continue;
                         bool isActive = (!string.IsNullOrEmpty(activePresetName) && st.name == activePresetName);
@@ -616,8 +769,8 @@ namespace GenericDataStreaming.EditorScripts
                             GUILayout.Label("○", EditorStyles.miniLabel, GUILayout.Width(20));
                         }
 
-                        GUILayout.Label($"[Preset] {st.name}", EditorStyles.boldLabel, GUILayout.Width(180));
-                        GUILayout.Label($"Nodi: {st.nodes.Count} | Res: {st.textureResolution} | Canali: {st.channels.Count} | Binders: {st.propertyBinders.Count + st.colorBinders.Count}", EditorStyles.miniLabel);
+                        GUILayout.Label($"[Stream] {st.name}", EditorStyles.boldLabel, GUILayout.Width(180));
+                        GUILayout.Label($"Canali: {st.channels.Count} | Binders: {st.propertyBinders.Count + st.colorBinders.Count + st.triggerBinders.Count} | Modifiers: {st.decayTriggers.Count + st.mathModifiers.Count + st.metronomes.Count}", EditorStyles.miniLabel);
 
                         GUI.backgroundColor = isActive ? DAWTheme.EmeraldZen : Color.green;
                         string applyLabel = isActive ? "✓ ATTIVO (Ricarica)" : "APPLICA ALLA SCENA";
@@ -626,7 +779,7 @@ namespace GenericDataStreaming.EditorScripts
                             st.ApplyToScene();
                             activePresetName = st.name;
                             EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
-                            if (cachedSceneTemplates != null) selectedTemplateIndex = cachedSceneTemplates.IndexOf(st);
+                            RefreshTemplates();
                         }
 
                         GUI.backgroundColor = new Color(1f, 0.65f, 0.2f);
@@ -635,7 +788,7 @@ namespace GenericDataStreaming.EditorScripts
                             if (EditorUtility.DisplayDialog("Sovrascrivi Template", $"Vuoi davvero sovrascrivere il template '{st.name}' con lo stato attuale della scena?", "Sì, Sovrascrivi", "Annulla"))
                             {
                                 string preservedName = st.name;
-                                var snapshot = MedicalXR.RayMarching.SdfSceneTemplate.CaptureCurrentScene(preservedName);
+                                var snapshot = DataStreamSceneTemplate.CaptureCurrentScene(preservedName);
                                 EditorUtility.CopySerialized(snapshot, st);
                                 st.name = preservedName;
                                 EditorUtility.SetDirty(st);
@@ -643,15 +796,14 @@ namespace GenericDataStreaming.EditorScripts
                                 activePresetName = preservedName;
                                 EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
                                 RefreshTemplates();
-                                if (cachedSceneTemplates != null) selectedTemplateIndex = cachedSceneTemplates.IndexOf(st);
-                                Debug.Log($"[DAW Mixer] Template '{preservedName}' sovrascritto con successo con lo stato attuale della scena!");
+                                Debug.Log($"[Pulse Console] Template '{preservedName}' sovrascritto con successo!");
                             }
                         }
 
                         GUI.backgroundColor = new Color(0.85f, 0.25f, 0.25f);
                         if (GUILayout.Button("ELIMINA", GUILayout.Width(75), GUILayout.Height(22)))
                         {
-                            DeleteTemplate(st);
+                            DeleteGenericTemplate(st);
                             GUIUtility.ExitGUI();
                         }
 
@@ -659,10 +811,115 @@ namespace GenericDataStreaming.EditorScripts
                         EditorGUILayout.EndHorizontal();
                     }
                 }
+                else
+                {
+                    EditorGUILayout.HelpBox("Nessun DataStream Scene Template trovato in progetto. Usa '➕ Salva come Nuovo DataStream Template' per crearne uno.", MessageType.None);
+                }
+
+                // 2. Volumetric SDF Scenarios (Companion)
+                EditorGUILayout.Space(6);
+                if (IsVolumetricSdfInstalled)
+                {
+                    GUILayout.Label("Archivio Scenari Volumetrici Companion (VolumetricSDF CSG & VFX):", EditorStyles.boldLabel);
+                    if (cachedSdfTemplates != null && cachedSdfTemplates.Count > 0)
+                    {
+                        foreach (var so in cachedSdfTemplates.ToArray())
+                        {
+                            if (so == null) continue;
+                            bool isActive = (!string.IsNullOrEmpty(activePresetName) && so.name == activePresetName);
+
+                            if (isActive) GUI.backgroundColor = new Color(0.12f, 0.40f, 0.30f, 1.0f);
+                            EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+                            if (isActive) GUI.backgroundColor = Color.white;
+
+                            if (isActive)
+                            {
+                                var prevC = GUI.contentColor;
+                                GUI.contentColor = DAWTheme.EmeraldZen;
+                                GUILayout.Label("● ATTIVO", EditorStyles.boldLabel, GUILayout.Width(70));
+                                GUI.contentColor = prevC;
+                            }
+                            else
+                            {
+                                GUILayout.Label("○", EditorStyles.miniLabel, GUILayout.Width(20));
+                            }
+
+                            GUILayout.Label($"[SDF CSG] {so.name}", EditorStyles.boldLabel, GUILayout.Width(180));
+                            GUILayout.Label("Procedural Raymarching & Voxelizer Scenario", EditorStyles.miniLabel);
+
+                            GUI.backgroundColor = isActive ? DAWTheme.EmeraldZen : Color.green;
+                            string applyLabel = isActive ? "✓ ATTIVO (Ricarica)" : "APPLICA ALLA SCENA";
+                            if (GUILayout.Button(applyLabel, GUILayout.Width(160), GUILayout.Height(22)))
+                            {
+                                var method = so.GetType().GetMethod("ApplyToScene", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                                method?.Invoke(so, null);
+                                activePresetName = so.name;
+                                EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
+                                RefreshTemplates();
+                            }
+
+                            GUI.backgroundColor = new Color(1f, 0.65f, 0.2f);
+                            if (GUILayout.Button("SOVRASCRIVI", GUILayout.Width(100), GUILayout.Height(22)))
+                            {
+                                if (EditorUtility.DisplayDialog("Sovrascrivi Template", $"Vuoi davvero sovrascrivere lo scenario SDF '{so.name}' con lo stato attuale della scena?", "Sì, Sovrascrivi", "Annulla"))
+                                {
+                                    string preservedName = so.name;
+                                    var captureMethod = so.GetType().GetMethod("CaptureCurrentScene", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                                    if (captureMethod != null)
+                                    {
+                                        var snapshot = captureMethod.Invoke(null, new object[] { preservedName });
+                                        if (snapshot != null)
+                                        {
+                                            EditorUtility.CopySerialized(snapshot, so);
+                                            so.name = preservedName;
+                                            EditorUtility.SetDirty(so);
+                                            AssetDatabase.SaveAssets();
+                                            activePresetName = preservedName;
+                                            EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
+                                            RefreshTemplates();
+                                            Debug.Log($"[Pulse Console] Scenario SDF '{preservedName}' sovrascritto con successo!");
+                                        }
+                                    }
+                                }
+                            }
+
+                            GUI.backgroundColor = new Color(0.85f, 0.25f, 0.25f);
+                            if (GUILayout.Button("ELIMINA", GUILayout.Width(75), GUILayout.Height(22)))
+                            {
+                                DeleteGenericTemplate(so);
+                                GUIUtility.ExitGUI();
+                            }
+
+                            GUI.backgroundColor = Color.white;
+                            EditorGUILayout.EndHorizontal();
+                        }
+                    }
+                }
+                else
+                {
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                    GUILayout.Label("📦 PACCHETTO RACCOMANDATO: Volumetric SDF Engine", EditorStyles.boldLabel);
+                    EditorGUILayout.HelpBox(
+                        "Per sbloccare il rendering volumetrico implicito GPU, i modificatori CSG (Twist, Ripple, Noise) e tutti i 9 scenari clinici (Calma, Stress, Ipossia, BoubaKiki, ecc.), installa il pacchetto companion 'com.federicocolombo.volumetricsdf'.",
+                        MessageType.Info
+                    );
+                    EditorGUILayout.BeginHorizontal();
+                    if (GUILayout.Button("📋 Copia Git URL Companion", GUILayout.Height(24)))
+                    {
+                        EditorGUIUtility.systemCopyBuffer = "https://github.com/federicocolombo12/VolumetricSDF.git";
+                        Debug.Log("[Pulse Console] Git URL copiato negli appunti: https://github.com/federicocolombo12/VolumetricSDF.git");
+                    }
+                    if (GUILayout.Button("📖 Documentazione Companion", GUILayout.Height(24)))
+                    {
+                        Application.OpenURL("https://github.com/federicocolombo12/VolumetricSDF");
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.EndVertical();
+                }
             }
 
             // -------------------------------------------------------------
-            // BENCHMARK & PERFORMANCE PROFILING (Capitolo 5 Tesi)
+            // BENCHMARK & PERFORMANCE PROFILING
             // -------------------------------------------------------------
             EditorGUILayout.Space(5);
             showBenchmark = EditorGUILayout.Foldout(showBenchmark, "⚡ BENCHMARK & PERFORMANCE (Tesi Cap. 5 - XR Profiling)", true, EditorStyles.foldoutHeader);
@@ -697,225 +954,100 @@ namespace GenericDataStreaming.EditorScripts
 
         private void DrawBenchmarkSection()
         {
-            var runner = Object.FindFirstObjectByType<MedicalXR.RayMarching.MedicalXRBenchmarkRunner>();
-            var hud = Object.FindFirstObjectByType<MedicalXR.RayMarching.MedicalXRPerformanceHUD>();
-            var voxelizer = Object.FindFirstObjectByType<MedicalXR.RayMarching.SdfVolumeVoxelizer>();
-            var controller = Object.FindFirstObjectByType<MedicalXR.RayMarching.SdfGroupController>();
+            if (!IsBenchmarkAvailable)
+            {
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                GUILayout.Label("⚡ BENCHMARK & PERFORMANCE COMPUTAZIONALE", EditorStyles.boldLabel);
+                EditorGUILayout.HelpBox(
+                    "I benchmark computazionali automatici su GPU (frame time, 1% low, VRAM) e l'HUD di telemetria richiedono il pacchetto companion raccomandato 'com.federicocolombo.volumetricsdf'.",
+                    MessageType.Info
+                );
+                if (GUILayout.Button("📋 Copia Git URL VolumetricSDF", GUILayout.Height(24)))
+                {
+                    EditorGUIUtility.systemCopyBuffer = "https://github.com/federicocolombo12/VolumetricSDF.git";
+                    Debug.Log("[Pulse Console] URL copiato negli appunti: https://github.com/federicocolombo12/VolumetricSDF.git");
+                }
+                EditorGUILayout.EndVertical();
+                return;
+            }
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            var runner = BenchmarkRunnerType != null ? Object.FindFirstObjectByType(BenchmarkRunnerType) as Component : null;
 
-            // 1. Status / Progress
-            if (runner != null && runner.isRunning)
+            EditorGUILayout.BeginHorizontal();
+            if (!Application.isPlaying)
             {
-                EditorGUILayout.HelpBox($"⚡ BENCHMARK IN CORSO: {runner.currentTestStatus}", MessageType.Warning);
-                Rect pRect = GUILayoutUtility.GetRect(18, 22, "TextField");
-                EditorGUI.ProgressBar(pRect, runner.progressPercent, $"{runner.currentTestStatus} ({runner.progressPercent * 100f:F0}%)");
-                EditorGUILayout.Space(5);
+                GUI.backgroundColor = new Color(0.3f, 1f, 0.4f);
+                if (GUILayout.Button("▶ ENTRA IN PLAY MODE ED AVVIA BENCHMARK", GUILayout.Height(30)))
+                {
+                    EnsureBenchmarkComponents();
+                    var autoRunProp = BenchmarkRunnerType.GetProperty("AutoRunOnPlay", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                    autoRunProp?.SetValue(null, true);
+                    EditorApplication.isPlaying = true;
+                }
+                GUI.backgroundColor = Color.white;
             }
             else
             {
-                EditorGUILayout.BeginHorizontal();
-                if (!Application.isPlaying)
-                {
-                    GUI.backgroundColor = new Color(0.3f, 1f, 0.4f);
-                    if (GUILayout.Button("▶ ENTRA IN PLAY MODE ED AVVIA BENCHMARK", GUILayout.Height(30)))
-                    {
-                        EnsureBenchmarkComponents();
-                        MedicalXR.RayMarching.MedicalXRBenchmarkRunner.AutoRunOnPlay = true;
-                        EditorApplication.isPlaying = true;
-                    }
-                    GUI.backgroundColor = Color.white;
-                }
-                else
-                {
-                    GUI.backgroundColor = new Color(0.3f, 1f, 0.4f);
-                    if (GUILayout.Button("⚡ AVVIA BENCHMARK COMPLETO (20s)", GUILayout.Height(30)))
-                    {
-                        EnsureBenchmarkComponents();
-                        if (runner == null) runner = Object.FindFirstObjectByType<MedicalXR.RayMarching.MedicalXRBenchmarkRunner>();
-                        if (runner != null) runner.StartBenchmark();
-                    }
-                    GUI.backgroundColor = Color.white;
-                }
-
-                if (GUILayout.Button("Setup Componenti in Scena", GUILayout.Width(190), GUILayout.Height(30)))
+                GUI.backgroundColor = new Color(0.3f, 1f, 0.4f);
+                if (GUILayout.Button("⚡ AVVIA BENCHMARK COMPLETO (20s)", GUILayout.Height(30)))
                 {
                     EnsureBenchmarkComponents();
-                }
-                EditorGUILayout.EndHorizontal();
-            }
-
-            EditorGUILayout.Space(5);
-
-            // 2. Quick Live Toggles
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Controlli Live:", EditorStyles.boldLabel, GUILayout.Width(100));
-
-            // HUD Toggle
-            if (hud != null)
-            {
-                GUI.backgroundColor = hud.showHUD ? Color.green : Color.gray;
-                if (GUILayout.Button(hud.showHUD ? "Performance HUD: ON [F1]" : "Performance HUD: OFF [F1]", GUILayout.Width(180)))
-                {
-                    hud.showHUD = !hud.showHUD;
-                    EditorUtility.SetDirty(hud);
-                }
-                GUI.backgroundColor = Color.white;
-            }
-
-            // Solid Mesh Raymarch Toggle (Pixel-Fill Decoupling)
-            if (controller != null)
-            {
-                GUI.backgroundColor = controller.renderSolidMesh ? new Color(1f, 0.7f, 0.2f) : Color.cyan;
-                string modeText = controller.renderSolidMesh ? "Raymarch Solido: ON [F2]" : "Decoupled Physics ONLY [F2]";
-                if (GUILayout.Button(modeText, GUILayout.Width(200)))
-                {
-                    controller.renderSolidMesh = !controller.renderSolidMesh;
-                    EditorUtility.SetDirty(controller);
-                }
-                GUI.backgroundColor = Color.white;
-            }
-
-            // Voxelizer Res cycle
-            if (voxelizer != null)
-            {
-                if (GUILayout.Button($"Voxelizer Res: {voxelizer.textureResolution}³ [F3]", GUILayout.Width(160)))
-                {
-                    if (hud != null) hud.CycleResolution();
-                    else
+                    if (runner == null && BenchmarkRunnerType != null) runner = Object.FindFirstObjectByType(BenchmarkRunnerType) as Component;
+                    if (runner != null)
                     {
-                        int[] resList = { 16, 32, 48, 64, 96, 128 };
-                        int idx = System.Array.IndexOf(resList, voxelizer.textureResolution);
-                        voxelizer.textureResolution = resList[(idx + 1) % resList.Length];
+                        var startMethod = BenchmarkRunnerType.GetMethod("StartBenchmark", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                        startMethod?.Invoke(runner, null);
                     }
-                    EditorUtility.SetDirty(voxelizer);
-                }
-            }
-
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.Space(5);
-
-            // 3. Results Preview & Files
-            var results = (runner != null && runner.results != null && runner.results.Count > 0)
-                ? runner.results
-                : (MedicalXR.RayMarching.MedicalXRBenchmarkRunner.LatestResults.Count > 0
-                    ? MedicalXR.RayMarching.MedicalXRBenchmarkRunner.LatestResults
-                    : (cachedBenchmarkResults ?? (cachedBenchmarkResults = MedicalXR.RayMarching.MedicalXRBenchmarkRunner.LoadSavedResults())));
-
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Label(results != null && results.Count > 0 ? $"Dati Benchmark Disponibili ({results.Count} test archiviati):" : "Nessun dato di benchmark trovato ancora.", EditorStyles.boldLabel);
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("Ricarica Dati", GUILayout.Width(100)))
-            {
-                cachedBenchmarkResults = MedicalXR.RayMarching.MedicalXRBenchmarkRunner.LoadSavedResults();
-            }
-
-            string projectRoot = System.IO.Directory.GetParent(Application.dataPath).FullName;
-            string parentDir = System.IO.Directory.GetParent(projectRoot).FullName;
-            string optFolder = System.IO.Path.Combine(parentDir, "Tesi_SDF_MedicalXR", "Docs", "Optimization");
-            string mdPath = System.IO.Path.Combine(optFolder, "Benchmark_Results.md");
-            string csvPath = System.IO.Path.Combine(optFolder, "benchmark_data.csv");
-
-            if (System.IO.File.Exists(mdPath))
-            {
-                GUI.backgroundColor = Color.cyan;
-                if (GUILayout.Button("📄 Apri Benchmark_Results.md", GUILayout.Width(200)))
-                {
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(mdPath) { UseShellExecute = true });
                 }
                 GUI.backgroundColor = Color.white;
             }
 
-            if (System.IO.File.Exists(csvPath))
+            if (GUILayout.Button("Setup Componenti in Scena", GUILayout.Width(190), GUILayout.Height(30)))
             {
-                if (GUILayout.Button("📊 Apri benchmark_data.csv", GUILayout.Width(180)))
-                {
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(csvPath) { UseShellExecute = true });
-                }
+                EnsureBenchmarkComponents();
             }
             EditorGUILayout.EndHorizontal();
 
-            // Preview Table
-            if (results != null && results.Count > 0)
-            {
-                EditorGUILayout.Space(3);
-                EditorGUILayout.BeginVertical(GUI.skin.box);
-                
-                // Header
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.Label("Test", EditorStyles.boldLabel, GUILayout.Width(220));
-                GUILayout.Label("Risoluzione", EditorStyles.boldLabel, GUILayout.Width(90));
-                GUILayout.Label("VRAM", EditorStyles.boldLabel, GUILayout.Width(80));
-                GUILayout.Label("Solid Mesh", EditorStyles.boldLabel, GUILayout.Width(100));
-                GUILayout.Label("Avg FPS", EditorStyles.boldLabel, GUILayout.Width(80));
-                GUILayout.Label("1% Low", EditorStyles.boldLabel, GUILayout.Width(70));
-                GUILayout.Label("Frame Time", EditorStyles.boldLabel, GUILayout.Width(90));
-                GUILayout.Label("Target XR 72Hz", EditorStyles.boldLabel, GUILayout.Width(110));
-                EditorGUILayout.EndHorizontal();
-
-                foreach (var r in results)
-                {
-                    EditorGUILayout.BeginHorizontal();
-                    GUILayout.Label(r.testName, GUILayout.Width(220));
-                    GUILayout.Label($"{r.resolution}³", GUILayout.Width(90));
-                    GUILayout.Label($"{r.vramMb:F2} MB", GUILayout.Width(80));
-                    GUILayout.Label(r.solidMeshEnabled ? "ON (Raymarch)" : "OFF (Physics)", GUILayout.Width(100));
-
-                    Color fpsCol = r.avgFps >= 71.5f ? Color.green : (r.avgFps >= 45f ? Color.yellow : Color.red);
-                    var prevCol = GUI.contentColor;
-                    GUI.contentColor = fpsCol;
-                    GUILayout.Label($"{r.avgFps:F1} FPS", EditorStyles.boldLabel, GUILayout.Width(80));
-                    GUI.contentColor = prevCol;
-
-                    GUILayout.Label($"{r.onePercentLowFps:F1}", GUILayout.Width(70));
-                    GUILayout.Label($"{r.avgFrameTimeMs:F2} ms", GUILayout.Width(90));
-
-                    GUI.contentColor = r.avgFps >= 71.5f ? Color.green : Color.yellow;
-                    GUILayout.Label(r.avgFps >= 71.5f ? "✅ Soddisfatto" : "⚠️ Sotto soglia", GUILayout.Width(110));
-                    GUI.contentColor = prevCol;
-
-                    EditorGUILayout.EndHorizontal();
-                }
-                EditorGUILayout.EndVertical();
-            }
-
+            EditorGUILayout.Space(5);
+            EditorGUILayout.HelpBox("Benchmark integrato con VolumetricSDF attivo. I log e CSV verranno salvati nei report di telemetria.", MessageType.None);
             EditorGUILayout.EndVertical();
         }
 
         private void EnsureBenchmarkComponents()
         {
-            var voxelizer = Object.FindFirstObjectByType<MedicalXR.RayMarching.SdfVolumeVoxelizer>();
+            if (!IsBenchmarkAvailable) return;
+            var voxelizerType = System.Type.GetType("MedicalXR.RayMarching.SdfVolumeVoxelizer, MedicalXR.VolumetricSDF");
+            var voxelizer = voxelizerType != null ? Object.FindFirstObjectByType(voxelizerType) as Component : null;
             if (voxelizer != null)
             {
                 var go = voxelizer.gameObject;
-                if (go.GetComponent<MedicalXR.RayMarching.MedicalXRBenchmarkRunner>() == null)
+                if (BenchmarkRunnerType != null && go.GetComponent(BenchmarkRunnerType) == null)
                 {
-                    Undo.AddComponent<MedicalXR.RayMarching.MedicalXRBenchmarkRunner>(go);
-                    Debug.Log("[DAW Mixer] MedicalXRBenchmarkRunner aggiunto a SDF_Volume.");
+                    Undo.AddComponent(go, BenchmarkRunnerType);
+                    Debug.Log("[Pulse Console] MedicalXRBenchmarkRunner aggiunto a SDF_Volume.");
                 }
-                if (go.GetComponent<MedicalXR.RayMarching.MedicalXRPerformanceHUD>() == null)
+                var hudType = System.Type.GetType("MedicalXR.RayMarching.MedicalXRPerformanceHUD, MedicalXR.VolumetricSDF");
+                if (hudType != null && go.GetComponent(hudType) == null)
                 {
-                    Undo.AddComponent<MedicalXR.RayMarching.MedicalXRPerformanceHUD>(go);
-                    Debug.Log("[DAW Mixer] MedicalXRPerformanceHUD aggiunto a SDF_Volume.");
+                    Undo.AddComponent(go, hudType);
+                    Debug.Log("[Pulse Console] MedicalXRPerformanceHUD aggiunto a SDF_Volume.");
                 }
                 EditorUtility.SetDirty(go);
             }
             else
             {
-                Debug.LogWarning("[DAW Mixer] Impossibile trovare SdfVolumeVoxelizer in scena per associare Benchmark & HUD.");
+                Debug.LogWarning("[Pulse Console] Impossibile trovare SdfVolumeVoxelizer in scena per associare Benchmark & HUD.");
             }
         }
 
-        private void SaveCurrentSceneAsTemplate()
+        private void SaveCurrentSceneAsStreamTemplate()
         {
-            string path = EditorUtility.SaveFilePanelInProject("Salva Template di Scena", "NuovoScenario", "asset", "Salva lo stato completo della scena come Template");
+            string path = EditorUtility.SaveFilePanelInProject("Salva Template DataStream", "NuovoRouting", "asset", "Salva la configurazione dei canali e binders come Template");
             if (string.IsNullOrEmpty(path)) return;
 
             string templateName = System.IO.Path.GetFileNameWithoutExtension(path);
-            var newTemplate = MedicalXR.RayMarching.SdfSceneTemplate.CaptureCurrentScene(templateName);
+            var newTemplate = DataStreamSceneTemplate.CaptureCurrentScene(templateName);
             newTemplate.name = templateName;
 
             AssetDatabase.CreateAsset(newTemplate, path);
@@ -927,33 +1059,50 @@ namespace GenericDataStreaming.EditorScripts
 
             activePresetName = templateName;
             EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
-            if (cachedSceneTemplates != null)
+            Debug.Log($"[Pulse Console] Template DataStream salvato e attivato: {path}");
+        }
+
+        private void SaveCurrentSceneAsSdfTemplate()
+        {
+            if (!IsVolumetricSdfInstalled) return;
+            string path = EditorUtility.SaveFilePanelInProject("Salva Template SDF", "NuovoScenarioSDF", "asset", "Salva lo stato completo della scena SDF come Template");
+            if (string.IsNullOrEmpty(path)) return;
+
+            string templateName = System.IO.Path.GetFileNameWithoutExtension(path);
+            var captureMethod = SdfSceneTemplateType.GetMethod("CaptureCurrentScene", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            if (captureMethod != null)
             {
-                for (int i = 0; i < cachedSceneTemplates.Count; i++)
+                var newTemplate = captureMethod.Invoke(null, new object[] { templateName }) as ScriptableObject;
+                if (newTemplate != null)
                 {
-                    if (cachedSceneTemplates[i] != null && cachedSceneTemplates[i].name == activePresetName)
-                    {
-                        selectedTemplateIndex = i;
-                        break;
-                    }
+                    newTemplate.name = templateName;
+                    AssetDatabase.CreateAsset(newTemplate, path);
+                    EditorUtility.SetDirty(newTemplate);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+
+                    RefreshTemplates();
+
+                    activePresetName = templateName;
+                    EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
+                    Debug.Log($"[Pulse Console] Template SDF salvato e attivato: {path}");
                 }
             }
-            Debug.Log($"[DAW Mixer] Template completo salvato e attivato: {path}");
         }
 
         private void DrawMasterPresetBar()
         {
-            if (cachedSceneTemplates == null || cachedSceneTemplates.Count == 0)
+            if (allPresets == null || allPresets.Count == 0)
             {
                 RefreshTemplates();
             }
 
             int activeIdx = -1;
-            if (cachedSceneTemplates != null)
+            if (allPresets != null)
             {
-                for (int i = 0; i < cachedSceneTemplates.Count; i++)
+                for (int i = 0; i < allPresets.Count; i++)
                 {
-                    if (cachedSceneTemplates[i] != null && cachedSceneTemplates[i].name == activePresetName)
+                    if (allPresets[i] != null && allPresets[i].Name == activePresetName)
                     {
                         activeIdx = i;
                         break;
@@ -961,16 +1110,16 @@ namespace GenericDataStreaming.EditorScripts
                 }
             }
 
-            if (cachedSceneTemplates != null && cachedSceneTemplates.Count > 0)
+            if (allPresets != null && allPresets.Count > 0)
             {
-                if (selectedTemplateIndex < 0 || selectedTemplateIndex >= cachedSceneTemplates.Count)
+                if (selectedTemplateIndex < 0 || selectedTemplateIndex >= allPresets.Count)
                 {
                     selectedTemplateIndex = activeIdx >= 0 ? activeIdx : 0;
                 }
             }
 
-            var selectedTemplate = (cachedSceneTemplates != null && cachedSceneTemplates.Count > selectedTemplateIndex)
-                ? cachedSceneTemplates[selectedTemplateIndex]
+            var selectedPreset = (allPresets != null && allPresets.Count > selectedTemplateIndex)
+                ? allPresets[selectedTemplateIndex]
                 : null;
 
             bool isSceneDirty = CheckIfSceneIsDirty(activePresetName);
@@ -1015,15 +1164,15 @@ namespace GenericDataStreaming.EditorScripts
             // 2. Navigation [◀]
             if (GUILayout.Button("◀", EditorStyles.miniButtonLeft, GUILayout.Width(26), GUILayout.Height(24)))
             {
-                if (cachedSceneTemplates != null && cachedSceneTemplates.Count > 0)
+                if (allPresets != null && allPresets.Count > 0)
                 {
-                    selectedTemplateIndex = (selectedTemplateIndex - 1 + cachedSceneTemplates.Count) % cachedSceneTemplates.Count;
+                    selectedTemplateIndex = (selectedTemplateIndex - 1 + allPresets.Count) % allPresets.Count;
                     isRenamingActive = false;
                 }
             }
 
-            // 3. Template Selection & Inline Renaming
-            if (selectedTemplate != null)
+            // 3. Preset Selection & Inline Renaming
+            if (selectedPreset != null)
             {
                 if (isRenamingActive)
                 {
@@ -1041,7 +1190,8 @@ namespace GenericDataStreaming.EditorScripts
                     {
                         if (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.KeypadEnter)
                         {
-                            ConfirmInlineRename(selectedTemplate, renameBuffer);
+                            selectedPreset.Rename?.Invoke(renameBuffer);
+                            isRenamingActive = false;
                             e.Use();
                         }
                         else if (e.keyCode == KeyCode.Escape)
@@ -1054,7 +1204,8 @@ namespace GenericDataStreaming.EditorScripts
                     GUI.backgroundColor = DAWTheme.EmeraldZen;
                     if (GUILayout.Button("✓", EditorStyles.miniButtonMid, GUILayout.Width(24), GUILayout.Height(24)))
                     {
-                        ConfirmInlineRename(selectedTemplate, renameBuffer);
+                        selectedPreset.Rename?.Invoke(renameBuffer);
+                        isRenamingActive = false;
                     }
                     GUI.backgroundColor = DAWTheme.CrimsonRed;
                     if (GUILayout.Button("✕", EditorStyles.miniButtonRight, GUILayout.Width(24), GUILayout.Height(24)))
@@ -1065,13 +1216,8 @@ namespace GenericDataStreaming.EditorScripts
                 }
                 else
                 {
-                    string[] templateNames = cachedSceneTemplates.Select(t => {
-                        if (t == null) return "<null>";
-                        if (!string.IsNullOrEmpty(t.name)) return t.name;
-                        string assetP = AssetDatabase.GetAssetPath(t);
-                        return !string.IsNullOrEmpty(assetP) ? System.IO.Path.GetFileNameWithoutExtension(assetP) : "Senza Nome";
-                    }).ToArray();
-                    int newIdx = EditorGUILayout.Popup(selectedTemplateIndex, templateNames, GUILayout.Width(160), GUILayout.Height(24));
+                    string[] presetLabels = allPresets.Select(p => p != null ? $"[{p.Category}] {p.Name}" : "<null>").ToArray();
+                    int newIdx = EditorGUILayout.Popup(selectedTemplateIndex, presetLabels, GUILayout.Width(180), GUILayout.Height(24));
                     if (newIdx != selectedTemplateIndex)
                     {
                         selectedTemplateIndex = newIdx;
@@ -1082,7 +1228,7 @@ namespace GenericDataStreaming.EditorScripts
                     if (GUILayout.Button("✏️ Rinomina", EditorStyles.miniButtonMid, GUILayout.Width(80), GUILayout.Height(24)))
                     {
                         isRenamingActive = true;
-                        renameBuffer = selectedTemplate.name;
+                        renameBuffer = selectedPreset.Name;
                         focusRenameField = true;
                     }
                     GUI.backgroundColor = Color.white;
@@ -1090,15 +1236,15 @@ namespace GenericDataStreaming.EditorScripts
             }
             else
             {
-                GUILayout.Label("(Nessun Template)", EditorStyles.miniLabel, GUILayout.Width(160), GUILayout.Height(24));
+                GUILayout.Label("(Nessun Template)", EditorStyles.miniLabel, GUILayout.Width(180), GUILayout.Height(24));
             }
 
             // Navigation [▶]
             if (GUILayout.Button("▶", EditorStyles.miniButtonRight, GUILayout.Width(26), GUILayout.Height(24)))
             {
-                if (cachedSceneTemplates != null && cachedSceneTemplates.Count > 0)
+                if (allPresets != null && allPresets.Count > 0)
                 {
-                    selectedTemplateIndex = (selectedTemplateIndex + 1) % cachedSceneTemplates.Count;
+                    selectedTemplateIndex = (selectedTemplateIndex + 1) % allPresets.Count;
                     isRenamingActive = false;
                 }
             }
@@ -1106,44 +1252,32 @@ namespace GenericDataStreaming.EditorScripts
             GUILayout.Space(10);
 
             // 4. Action Buttons
-            if (selectedTemplate != null)
+            if (selectedPreset != null)
             {
-                bool isAlreadyActive = (!string.IsNullOrEmpty(activePresetName) && selectedTemplate.name == activePresetName);
+                bool isAlreadyActive = (!string.IsNullOrEmpty(activePresetName) && selectedPreset.Name == activePresetName);
 
                 // APPLICA ALLA SCENA
                 GUI.backgroundColor = isAlreadyActive ? new Color(0.2f, 0.5f, 0.3f) : DAWTheme.EmeraldZen;
                 string applyLabel = isAlreadyActive ? "✓ RICARICA" : "🚀 APPLICA ALLA SCENA";
                 if (GUILayout.Button(applyLabel, GUILayout.Height(24), GUILayout.Width(150)))
                 {
-                    selectedTemplate.ApplyToScene();
-                    activePresetName = selectedTemplate.name;
+                    selectedPreset.Apply?.Invoke();
+                    activePresetName = selectedPreset.Name;
                     EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
-                    Debug.Log($"[DAW Mixer] Template '{selectedTemplate.name}' applicato alla scena!");
+                    Debug.Log($"[Pulse Console] Template '{selectedPreset.Name}' applicato alla scena!");
                 }
 
                 // SOVRASCRIVI
                 GUI.backgroundColor = isSceneDirty ? DAWTheme.AmberGold : new Color(0.3f, 0.35f, 0.4f);
                 if (GUILayout.Button("💾 SOVRASCRIVI", GUILayout.Height(24), GUILayout.Width(110)))
                 {
-                    if (EditorUtility.DisplayDialog("Sovrascrivi Template", $"Vuoi davvero sovrascrivere il template '{selectedTemplate.name}' con lo stato attuale della scena?", "Sì, Sovrascrivi", "Annulla"))
-                    {
-                        string preservedName = selectedTemplate.name;
-                        var snapshot = MedicalXR.RayMarching.SdfSceneTemplate.CaptureCurrentScene(preservedName);
-                        EditorUtility.CopySerialized(snapshot, selectedTemplate);
-                        selectedTemplate.name = preservedName;
-                        EditorUtility.SetDirty(selectedTemplate);
-                        AssetDatabase.SaveAssets();
-                        activePresetName = preservedName;
-                        EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
-                        RefreshTemplates();
-                        Debug.Log($"[DAW Mixer] Template '{preservedName}' sovrascritto con successo!");
-                    }
+                    selectedPreset.Overwrite?.Invoke();
                 }
                 // ELIMINA TEMPLATE CORRENTE
                 GUI.backgroundColor = new Color(0.75f, 0.2f, 0.2f);
                 if (GUILayout.Button("🗑️ ELIMINA", GUILayout.Height(24), GUILayout.Width(95)))
                 {
-                    DeleteTemplate(selectedTemplate);
+                    selectedPreset.Delete?.Invoke();
                     GUIUtility.ExitGUI();
                 }
                 GUI.backgroundColor = Color.white;
@@ -1153,7 +1287,7 @@ namespace GenericDataStreaming.EditorScripts
             GUI.backgroundColor = DAWTheme.ElectricCyan;
             if (GUILayout.Button("➕ SALVA NUOVO", GUILayout.Height(24), GUILayout.Width(120)))
             {
-                SaveCurrentSceneAsTemplate();
+                SaveCurrentSceneAsStreamTemplate();
             }
             GUI.backgroundColor = Color.white;
 
@@ -1162,7 +1296,7 @@ namespace GenericDataStreaming.EditorScripts
             EditorGUILayout.EndVertical();
         }
 
-        private void DeleteTemplate(MedicalXR.RayMarching.SdfSceneTemplate templateToDelete)
+        private void DeleteGenericTemplate(ScriptableObject templateToDelete)
         {
             if (templateToDelete == null) return;
 
@@ -1190,20 +1324,20 @@ namespace GenericDataStreaming.EditorScripts
                 isRenamingActive = false;
                 RefreshTemplates();
 
-                if (cachedSceneTemplates != null && cachedSceneTemplates.Count > 0)
+                if (allPresets != null && allPresets.Count > 0)
                 {
-                    selectedTemplateIndex = Mathf.Clamp(selectedTemplateIndex, 0, cachedSceneTemplates.Count - 1);
+                    selectedTemplateIndex = Mathf.Clamp(selectedTemplateIndex, 0, allPresets.Count - 1);
                 }
                 else
                 {
                     selectedTemplateIndex = 0;
                 }
 
-                Debug.Log($"[DAW Mixer] Template '{templateName}' eliminato con successo dal disco.");
+                Debug.Log($"[Pulse Console] Template '{templateName}' eliminato con successo dal disco.");
             }
         }
 
-        private void ConfirmInlineRename(MedicalXR.RayMarching.SdfSceneTemplate template, string newName)
+        private void ConfirmGenericRename(ScriptableObject template, string newName)
         {
             if (template == null || string.IsNullOrWhiteSpace(newName))
             {
@@ -1232,22 +1366,22 @@ namespace GenericDataStreaming.EditorScripts
                         activePresetName = cleanNewName;
                         EditorPrefs.SetString("MedicalXR_ActivePreset", activePresetName);
                     }
-                    if (cachedSceneTemplates != null)
+                    if (allPresets != null)
                     {
-                        for (int i = 0; i < cachedSceneTemplates.Count; i++)
+                        for (int i = 0; i < allPresets.Count; i++)
                         {
-                            if (cachedSceneTemplates[i] != null && cachedSceneTemplates[i].name == cleanNewName)
+                            if (allPresets[i] != null && allPresets[i].Name == cleanNewName)
                             {
                                 selectedTemplateIndex = i;
                                 break;
                             }
                         }
                     }
-                    Debug.Log($"[DAW Mixer] Template rinominato in: {cleanNewName}");
+                    Debug.Log($"[Pulse Console] Template rinominato in: {cleanNewName}");
                 }
                 else
                 {
-                    Debug.LogWarning($"[DAW Mixer] Errore durante la rinomina: {result}");
+                    Debug.LogWarning($"[Pulse Console] Errore durante la rinomina: {result}");
                 }
             }
             isRenamingActive = false;
@@ -1255,25 +1389,16 @@ namespace GenericDataStreaming.EditorScripts
 
         private bool CheckIfSceneIsDirty(string presetName)
         {
-            if (string.IsNullOrEmpty(presetName) || cachedSceneTemplates == null) return false;
-            var t = cachedSceneTemplates.Find(x => x != null && x.name == presetName);
-            if (t == null) return false;
+            if (string.IsNullOrEmpty(presetName) || allPresets == null) return false;
+            var item = allPresets.Find(x => x != null && x.Name == presetName);
+            if (item == null || item.Asset == null) return false;
 
-            var controller = Object.FindFirstObjectByType<MedicalXR.RayMarching.SdfGroupController>();
-            var voxelizer = Object.FindFirstObjectByType<MedicalXR.RayMarching.SdfVolumeVoxelizer>();
-            if (voxelizer != null && voxelizer.textureResolution != t.textureResolution) return true;
-
-            int sceneNodesCount = 0;
-            if (controller != null)
+            if (item.Asset is DataStreamSceneTemplate st)
             {
-                var nodes = controller.GetComponentsInChildren<MedicalXR.RayMarching.SdfNode>();
-                sceneNodesCount = nodes != null ? nodes.Length : 0;
-            }
-            if (sceneNodesCount != t.nodes.Count) return true;
-
-            if (registry != null && registry.channels != null)
-            {
-                if (registry.channels.Count != t.channels.Count) return true;
+                if (registry != null && registry.channels != null)
+                {
+                    if (registry.channels.Count != st.channels.Count) return true;
+                }
             }
 
             return false;

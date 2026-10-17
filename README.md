@@ -18,6 +18,9 @@
 > 📖 **Full Technical Documentation & Architecture Manual**:  
 > Explore guides, benchmarks, and interactive diagrams at **[federicocolombo12.github.io/PulseEngine](https://federicocolombo12.github.io/PulseEngine/)**
 
+> [!TIP]
+> **Modular Decoupling**: PulseEngine is designed as a standalone telemetry routing and Virtual DAW Mixer console. For standalone procedural CSG modeling, modifier volumes, and GPU voxelization, see the companion package **[VolumetricSDF](https://github.com/federicocolombo12/VolumetricSDF)**.
+
 **PulseEngine** bridges continuous telemetry streams with high-end real-time computer graphics. 
 
 Built following professional audio production paradigms, it provides a **Virtual DAW Mixer Console** inside Unity that routes, normalizes, and filters multi-protocol signals (OSC, WebSockets, Serial, Simulators) to drive:

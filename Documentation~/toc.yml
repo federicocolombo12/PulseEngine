@@ -16,21 +16,15 @@
       href: manual/signal-routing/modifiers-and-metronome.md
     - name: Property & Color Binders
       href: manual/signal-routing/binders.md
-- name: Volumetric SDF Engine
+- name: Integrations & Modular Ecosystem
   items:
-    - name: Primitives & CSG Operations
-      href: manual/volumetric-sdf/primitives-and-csg.md
-    - name: Standalone Modifier Volumes
-      href: manual/volumetric-sdf/modifier-volumes.md
-    - name: GPU Voxelizer & VFX Graph Pipeline
-      href: manual/volumetric-sdf/gpu-voxelizer-vfx.md
-    - name: Triplanar Texturing & MatCaps
-      href: manual/volumetric-sdf/surface-texturing.md
-- name: Clinical Biofeedback (Flagship Sample)
+    - name: Driving VolumetricSDF with PulseEngine
+      href: manual/integrations/volumetric-sdf-binding.md
+- name: Clinical Biofeedback
   items:
     - name: Medical XR Bio-Feedback Suite
       href: manual/clinical-biofeedback/biofeedback-suite.md
-- name: Performance & Mobile VR
+- name: Performance & Benchmarking
   items:
-    - name: Quest 3 Benchmarking & Zero-GC Profiling
-      href: manual/benchmarks/quest3-profiling.md
+    - name: Zero-GC Telemetry & Ingestion Profiling
+      href: manual/benchmarks/zero-gc-telemetry-profiling.md

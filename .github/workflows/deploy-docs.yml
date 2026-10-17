@@ -8,6 +8,7 @@ on:
       - 'Documentation~/**'
       - 'docfx.json'
       - '.github/workflows/deploy-docs.yml'
+      - 'README.md'
   workflow_dispatch:
 
 permissions:

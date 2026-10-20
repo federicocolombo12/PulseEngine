@@ -157,7 +157,7 @@ namespace GenericDataStreaming.EditorScripts
         }
         private static CopiedBinderData clipboardBinder;
 
-        [MenuItem("MedicalXR/Pulse Console")]
+        [MenuItem("PulseEngine/Pulse Console", priority = 1)]
         public static void ShowWindow()
         {
             var window = GetWindow<PulseConsoleWindow>("Pulse Console");

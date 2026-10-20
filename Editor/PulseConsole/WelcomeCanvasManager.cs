@@ -59,7 +59,7 @@ namespace MedicalXR.EditorScripts
                     if (textComp != null)
                     {
                         Undo.RecordObject(textComp, "Update Tutorial Text");
-                        textComp.text = "MedicalXR Bio-Feedback Engine\n\n1. Open 'MedicalXR -> Pulse Console' to manage data routing.\n2. Choose protocol: Unity Simulator, OSC / Checkme, WebSocket, Serial.\n3. Switch clinical scenarios (Calma, Stress, Ipossia) or apply Scene Templates.";
+                        textComp.text = "PulseEngine Bio-Feedback Engine\n\n1. Open 'PulseEngine -> Pulse Console' to manage data routing.\n2. Choose protocol: Unity Simulator, OSC / Checkme, WebSocket, Serial.\n3. Switch clinical scenarios (Calma, Stress, Ipossia) or apply Scene Templates.";
                         textComp.verticalOverflow = VerticalWrapMode.Overflow;
                         EditorUtility.SetDirty(textComp);
                     }

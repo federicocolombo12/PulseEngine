@@ -72,7 +72,7 @@ namespace GenericDataStreaming
     /// Canali del DataStreamRegistry, trigger registrati, modificatori (Decay, Math, Metronome)
     /// e tutti i binder (PropertyBinder, ColorBinder, TriggerBinder).
     /// </summary>
-    [CreateAssetMenu(fileName = "New DataStream Scene Template", menuName = "MedicalXR/DataStream Scene Template")]
+    [CreateAssetMenu(fileName = "New DataStream Scene Template", menuName = "PulseEngine/DataStream Scene Template")]
     public class DataStreamSceneTemplate : ScriptableObject
     {
         [Header("DataStream Channels")]

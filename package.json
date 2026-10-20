@@ -1,6 +1,6 @@
 {
   "name": "com.federicocolombo.pulseengine",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "PulseEngine: Signal Routing & Telemetry Bus",
   "description": "High-performance real-time telemetry bus and signal routing console (Pulse Console) for Unity, featuring multi-protocol ingestion (OSC, WebSocket, Serial, Simulators), modular signal modifiers, and universal property/color binders.",
   "unity": "6000.0",

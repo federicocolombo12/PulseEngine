@@ -15,7 +15,7 @@ namespace MedicalXR.EditorScripts
     {
         public static void GenerateScene() => GenerateSignalRoutingScene();
 
-        [MenuItem("MedicalXR/Generate Signal Routing Demo Scene")]
+        [MenuItem("PulseEngine/Generate Signal Routing Demo Scene", priority = 10)]
         public static void GenerateSignalRoutingScene()
         {
             // 1. Create a new empty scene
@@ -140,7 +140,7 @@ namespace MedicalXR.EditorScripts
             Debug.Log($"[PulseEngine] Signal Routing Demo Scene generata con successo a: {scenePath}");
         }
 
-        [MenuItem("MedicalXR/Generate Clinical Biofeedback Demo Scene")]
+        [MenuItem("PulseEngine/Generate Clinical Biofeedback Demo Scene", priority = 11)]
         public static void GenerateClinicalBiofeedbackScene()
         {
             Type controllerType = Type.GetType("MedicalXR.RayMarching.SdfGroupController, MedicalXR.VolumetricSDF");

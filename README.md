@@ -24,9 +24,10 @@
 **PulseEngine** bridges continuous telemetry streams with high-end real-time computer graphics. 
 
 Built following professional audio production paradigms, it provides a **Virtual DAW Mixer Console** inside Unity that routes, normalizes, and filters multi-protocol signals (OSC, WebSockets, Serial, Simulators) to drive:
-1. **Raymarched Solid CSG Geometries**: Infinite-resolution mathematical surfaces (Spheres, Boxes, Tori, Cylinders, Capsules) that blend, subtract, and warp organically in real time.
-2. **GPU Particle Swarms (VFX Graph)**: Asynchronous 3D texture voxelization via Compute Shaders, allowing millions of particles to adhere, collide, and swirl around dynamic implicit shapes.
-3. **Clinical & Creative Biofeedback**: Flagship medical XR templates translating heart rate (BPM), blood oxygenation (SpO2), and autonomic stress (HRV RMSSD) into visceral perceptual metaphors.
+1. **Universal Scene Parameters**: Real-time cached reflection delegates modulating Materials, Shaders, Transforms, Lights, and Audio DSP with zero boilerplate.
+2. **GPU Particle Swarms (Unity VFX Graph)**: Live dynamic blackboard property modulation (Turbulence, Spawn Rate, Particle Velocity, Vector Fields).
+3. **Clinical & Creative Biofeedback**: Flagship medical XR interoceptive loops translating heart rate (BPM), blood oxygenation (SpO2), and autonomic stress (HRV RMSSD) into visceral perceptual metaphors.
+4. **Companion Procedural Geometry ([VolumetricSDF](https://github.com/federicocolombo12/VolumetricSDF))**: Seamlessly pairs with our companion package to sculpt dynamic CSG implicit geometry, bounded modifier volumes, and 128³ GPU voxel grids.
 
 <p align="center">
   <a href="https://github.com/federicocolombo12/PulseEngine/raw/main/Documentation~/images/demo_raw.mp4">
@@ -87,11 +88,15 @@ While `PulseEngine` is domain-agnostic and drives standard Unity objects, lights
 
 ## 📊 Performance & Mobile VR Benchmarks
 
-<p align="center">
-  <img src="Documentation~/images/daw_benchmark_results_table.png" width="100%" alt="DAW Benchmark Results Table" />
-</p>
+PulseEngine is engineered for high-cadence XR headsets (Meta Quest 3, Apple Vision Pro, PCVR) where memory allocation pauses cause catastrophic frame drops.
 
-Empirical profiling results captured on **Meta Quest 3 (Standalone Android OpenXR)** using the integrated `MedicalXRBenchmarkRunner`:
+### Zero-GC Telemetry Ingestion
+Profiling over 1,000 consecutive frames with high-frequency network packets (>250 Hz) confirms:
+* **Garbage Collector Allocations**: **0.0 Bytes / frame** (lock-free pre-allocated ringbuffer).
+* **Execution Time (Main Thread Dispatch)**: **< 0.04 ms / frame** (in-place primitive math & cached delegates).
+
+### End-to-End System Performance (Paired with VolumetricSDF)
+Empirical profiling results captured on **Meta Quest 3 (Standalone Android OpenXR)** across 13 test conditions:
 
 | Condition / Mode | Resolution | Avg FPS | Frame Time | VRAM Footprint | GC Alloc / Frame |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -102,7 +107,7 @@ Empirical profiling results captured on **Meta Quest 3 (Standalone Android OpenX
 | **Bouba-Kiki Stress Test** | $64^3$ | **90.0 FPS** | **3.08 ms** | 2.00 MB | **0 Bytes** |
 
 > [!NOTE]
-> *Physics-Only Mode* achieves a **61.3% reduction in GPU frame time**, providing a guaranteed 90 Hz headroom for clinical applications where motion sickness prevention is critical.
+> *Physics-Only Mode* achieves a **61.3% reduction in GPU frame time**, providing a guaranteed 90 Hz headroom for clinical applications where motion sickness prevention is critical. See [VolumetricSDF Benchmarks](https://federicocolombo12.github.io/VolumetricSDF/manual/quest3-profiling.html) for detailed GPU kernel profiling.
 
 ---
 

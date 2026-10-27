@@ -58,12 +58,10 @@ Originally engineered for clinical trauma biofeedback in Extended Reality (XR) a
   * [Multi-Protocol Ingestion](manual/signal-routing/multi-protocol-sources.md)
   * [Modifiers & Metronome](manual/signal-routing/modifiers-and-metronome.md)
   * [Property & Color Binders](manual/signal-routing/binders.md)
-* **Volumetric SDF Engine Manual**:
-  * [Primitives & CSG Operations](manual/volumetric-sdf/primitives-and-csg.md)
-  * [Modifier Volumes](manual/volumetric-sdf/modifier-volumes.md)
-  * [GPU Voxelizer & VFX Graph Pipeline](manual/volumetric-sdf/gpu-voxelizer-vfx.md)
-  * [Triplanar Texturing & MatCaps](manual/volumetric-sdf/surface-texturing.md)
-* **Clinical Biofeedback Suite**:
+* **Integrations & Modular Ecosystem**:
+  * [Driving VolumetricSDF with PulseEngine](manual/integrations/volumetric-sdf-binding.md)
+  * [VolumetricSDF Companion Documentation ↗](https://federicocolombo12.github.io/VolumetricSDF/)
+* **Clinical Biofeedback**:
   * [Medical XR Bio-Feedback Suite](manual/clinical-biofeedback/biofeedback-suite.md)
-* **Performance & Optimization**:
-  * [Quest 3 Benchmarking & Profiling](manual/benchmarks/quest3-profiling.md)
+* **Performance & Benchmarking**:
+  * [Zero-GC Telemetry & Ingestion Profiling](manual/benchmarks/zero-gc-telemetry-profiling.md)

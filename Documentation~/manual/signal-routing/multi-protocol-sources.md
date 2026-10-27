@@ -9,7 +9,7 @@ PulseEngine supports multi-protocol ingestion natively. Through the abstract `ID
 All signal sources implement a clean, unified contract:
 
 ```csharp
-namespace PulseEngine
+namespace GenericDataStreaming
 {
     public interface IDataStreamSource
     {
@@ -77,7 +77,7 @@ Creating a custom hardware source (e.g., MQTT, Bluetooth LE, or Audio FFT) requi
 
 ```csharp
 using UnityEngine;
-using PulseEngine;
+using GenericDataStreaming;
 
 public class CustomMicrophoneSource : MonoBehaviour, IDataStreamSource
 {

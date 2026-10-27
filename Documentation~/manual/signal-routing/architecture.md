@@ -63,7 +63,7 @@ Registering and querying channels programmatically via C#:
 
 ```csharp
 using UnityEngine;
-using PulseEngine;
+using GenericDataStreaming;
 
 public class CustomTelemetryReceiver : MonoBehaviour
 {

@@ -39,41 +39,45 @@ This tutorial walks you through setting up your first real-time signal routing p
 
 ---
 
-## Step 3: Spawn a Volumetric SDF Hierarchy
+## Step 3: Wire a Signal to Scene Objects (Live Patching)
 
-1. In the Unity Hierarchy window, right-click and select **GameObject > 3D Object > PulseEngine > SDF Group Controller**.
-2. A new GameObject with the `SdfGroupController` component and a solid proxy mesh is instantiated.
-3. In the Inspector of `SDF Group Controller`, click **[+ Aggiungi Nodo Sfera]**.
-4. A child GameObject with an `SdfNode` component is created. Select it and move it in the Scene view using standard transform gizmos.
-5. Click **[+ Aggiungi Nodo Scatola]** and move the box close to the sphere:
-   * In the `SdfNode` Inspector of the second shape, set **Combine Operation** to `SmoothUnion`.
-   * Adjust **Blend Softness** to `0.25`.
-   * Watch the two shapes melt seamlessly together in real time directly inside the **Scene View**!
+Now let's bind the simulated heart rate to modulate a scene property in real time:
+
+1. Create a 3D Sphere, Light, or Particle System in your scene (or select any existing GameObject).
+2. Return to the **DAW Mixer** window.
+3. Locate the channel strip for `heart_rate`.
+4. In the **Output Binders** section at the bottom of the strip, click **[+ Attach Property Binder]**.
+5. Select your target GameObject in the slot:
+   * **Target Mode**: Choose `TransformScale`, `MaterialFloat`, or `LightIntensity`.
+   * **Property / Axis**: Choose the target property to drive (e.g. `Uniform Scale` or `Intensity`).
+6. Enable **Use Local Remap**:
+   * Set Min Output to `1.0` (resting scale).
+   * Set Max Output to `1.25` (peak systolic contraction).
+7. Observe live in **Edit Mode** (via `[ExecuteAlways]`) or enter **Play Mode**:
+   * The object will pulse in perfect rhythm with the simulated cardiac wave!
 
 ---
 
-## Step 4: Wire a Signal to Volumetric Geometry (Live Patching)
+## Step 4: Companion Integration with VolumetricSDF (Optional)
 
-Now let's bind the simulated heart rate to deform the geometry:
+If you have also imported our companion package **[VolumetricSDF](https://github.com/federicocolombo12/VolumetricSDF)** (`com.federicocolombo.volumetricsdf`):
 
-1. Return to the **DAW Mixer** window.
-2. Locate the channel strip for `heart_rate`.
-3. In the **Output Binders** section at the bottom of the strip, click **[+ Attach Property Binder]**.
-4. Select your **SDF Group Controller** GameObject as the Target.
-5. In the target dropdown, choose `globalBlendSoftness`.
-6. Enable **Use Local Remap**:
-   * Set Min Output to `0.05` (tense, sharp geometry).
-   * Set Max Output to `0.40` (relaxed, flowing organic geometry).
-7. Enter **Play Mode** (or observe live in **Edit Mode** via `[ExecuteAlways]`):
-   * As the simulated heart pumps, the volumetric shape pulses smoothly, dynamically breathing between sharp cuts and organic fusions!
+1. Right-click in the Hierarchy and select **GameObject > 3D Object > VolumetricSDF > SDF Volume**.
+2. In the `heart_rate` channel strip on the DAW Mixer, add a **Property Binder** targeting the `SdfGroupController` component.
+3. Select `globalBlendSoftness`:
+   * Set Min Output to `0.05` (sharp, spiky Kiki state).
+   * Set Max Output to `0.45` (soft, melting Bouba state).
+4. As the simulated heart pumps, the volumetric shape pulses smoothly, dynamically breathing between sharp cuts and organic fusions!
 
 ---
 
 ## Step 5: Next Steps
 
-Congratulations! You have established a complete real-time signal-to-geometry pipeline.
+Congratulations! You have established a complete real-time telemetry routing pipeline.
 
 Explore the in-depth manuals:
+* [Architecture & Data Pipeline](manual/signal-routing/architecture.md): Deep dive into the zero-GC ingestion bus and thread-safe ringbuffer.
 * [DAW Mixer Console Manual](manual/signal-routing/daw-mixer.md): Learn advanced features including Insert FX, virtual channels, and Mute/Solo logic.
-* [GPU Voxelizer & VFX Graph Pipeline](manual/volumetric-sdf/gpu-voxelizer-vfx.md): Connect your SDF volume directly into particle collisions.
-* [Quest 3 Benchmarking](manual/benchmarks/quest3-profiling.md): Measure and profile your scene for mobile virtual reality.
+* [Zero-GC Telemetry & Ingestion Profiling](manual/benchmarks/zero-gc-telemetry-profiling.md): Profiling measurements verifying zero heap allocations at 120 Hz.
+* [Driving VolumetricSDF with PulseEngine](manual/integrations/volumetric-sdf-binding.md): End-to-end guide to driving procedural CSG and VFX Graph particles.
+* [VolumetricSDF Technical Documentation ↗](https://federicocolombo12.github.io/VolumetricSDF/): Dedicated manual for the companion implicit CSG & GPU voxelizer engine.

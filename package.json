@@ -5,7 +5,7 @@
   "description": "High-performance real-time telemetry bus and signal routing console (Pulse Console) for Unity, featuring multi-protocol ingestion (OSC, WebSocket, Serial, Simulators), modular signal modifiers, and universal property/color binders.",
   "unity": "6000.0",
   "unityRelease": "0b1",
-  "documentationUrl": "https://github.com/federicocolombo12/PulseEngine/blob/main/Documentation~/index.md",
+  "documentationUrl": "https://federicocolombo12.github.io/PulseEngine/",
   "changelogUrl": "https://github.com/federicocolombo12/PulseEngine/blob/main/CHANGELOG.md",
   "licensesUrl": "https://github.com/federicocolombo12/PulseEngine/blob/main/LICENSE.md",
   "keywords": [

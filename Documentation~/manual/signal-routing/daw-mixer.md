@@ -27,20 +27,14 @@ The DAW Mixer console is divided into five specialized zones:
 
 ---
 
-## Channel Strip Architecture
-
-<p align="center">
-  <img src="../../images/daw_channel_strip.png" width="340px" alt="Single Channel Strip Closeup" />
-</p>
-
-Each telemetry channel in the mixer possesses a dedicated vertical strip providing complete control over normalization, filtering, and destination mapping:
+## 1. Master Console & Preset Bar
 
 Located at the top of the window, this bar remains pinned regardless of vertical scrolling:
 
 * **OLED State Indicator**: Displays the currently active scene preset. If parameters have been modified from the saved asset, an asterisk `* [MODIFICATO]` appears.
-* **Preset Navigation `[◀] [▶]`**: Cycles through all detected `SdfSceneTemplate` ScriptableObjects in the project.
-* **`[+ Nuovo]`**: Opens a prompt to instantiate a new clean preset asset in `Assets/.../Templates/`.
-* **`[💾 Salva] / [SOVRASCRIVI]`**: Serializes all active channel configurations, normalizers, faders, SDF nodes, and texturing options into the asset with 1 click.
+* **Preset Navigation `[◀] [▶]`**: Cycles through all detected `DataStreamSceneTemplate` ScriptableObjects in the project.
+* **`[+ Nuovo]`**: Opens a prompt to instantiate a new clean preset asset.
+* **`[💾 Salva] / [SOVRASCRIVI]`**: Serializes all active channel configurations, normalizers, faders, and routing binders into the asset with 1 click.
 
 ---
 
@@ -61,7 +55,11 @@ The **Inbound Signal Sniffer** listens to the network socket layer in real-time,
 
 ## 3. Channel Strip Architecture
 
-Each channel in the mixer possesses a dedicated vertical strip:
+<p align="center">
+  <img src="../../images/daw_channel_strip.png" width="340px" alt="Single Channel Strip Closeup" />
+</p>
+
+Each channel in the mixer possesses a dedicated vertical strip providing complete control over normalization, filtering, and destination mapping:
 
 ### Real-Time OLED Oscilloscope
 Renders a continuous rolling waveform (50 samples) of the incoming signal. The trace is automatically color-coded:

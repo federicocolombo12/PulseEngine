@@ -7,11 +7,9 @@ Welcome to the **PulseEngine** documentation.
 Originally engineered for clinical trauma biofeedback in Extended Reality (XR) at the **Politecnico di Torino**, PulseEngine is built from the ground up to be **domain-agnostic**, making it equally powerful for medical simulation, audio-reactive VJ stages, interactive installations, and game development.
 
 <p align="center">
-  <a href="images/demo_raw.mp4">
-    <img src="images/demo_overview_preview.gif" width="100%" alt="PulseEngine Live In-Editor Demo Walkthrough" />
-  </a>
+  <img src="images/daw_mixer_full.png" width="90%" alt="PulseEngine Virtual DAW Mixer Console" />
   <br>
-  <em>🎬 <b>PulseEngine In-Engine Walkthrough</b>: Virtual DAW Mixer console, telemetry routing, and real-time GPU particle swarm modulation.</em>
+  <em>🎛️ <b>PulseEngine Virtual DAW Mixer Console</b>: Multi-channel telemetry routing, hardware fader strips, real-time OLED oscilloscopes, VU meters, and engine-level Mute/Solo.</em>
 </p>
 
 ---

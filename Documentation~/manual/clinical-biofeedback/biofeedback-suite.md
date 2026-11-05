@@ -46,10 +46,20 @@ PulseEngine processes three primary clinical biomarkers:
 Grounded in cross-modal cognitive psychology (Köhler 1929, Ramachandran & Hubbard 2001) and Polyvagal Theory, PulseEngine frames the interoceptive biofeedback journey along the continuous **Bouba $\leftrightarrow$ Kiki** affective spectrum:
 
 <p align="center">
+  <a href="../../images/clinical_telemetry_loop.mp4">
+    <img src="../../images/clinical_telemetry_preview.gif" width="100%" alt="Clinical Telemetry & Autonomic Down-Regulation Loop" />
+  </a>
+  <br>
+  <b>🎬 <a href="../../images/clinical_telemetry_loop.mp4">Watch Full Clinical Telemetry Sweep (36s MP4)</a></b>
+  <br>
+  <em>Live in-engine capture: Autonomic down-regulation sequence with real-time telemetry (HR 137 → 61 BPM, RMSSD 13 → 82 ms) driving continuous Bouba/Kiki shape morphing, rotational kinematics, and VFX particle swarm dynamics.</em>
+</p>
+
+<p align="center">
   <img src="../../images/scenario_bouba.gif" width="32%" alt="Bouba - Parasympathetic Rest" />
   <img src="../../images/bouba_kiki_morph.gif" width="32%" alt="Bouba-Kiki Real-Time Transition" />
   <img src="../../images/scenario_kiki.gif" width="32%" alt="Kiki - Sympathetic Arousal" />
-  <br><em>Real in-engine clinical capture: Left: <b>Bouba State</b> (parasympathetic calm, bulbous smooth lobes). Center: <b>Dynamic Morphing</b> (continuous real-time topological morphing). Right: <b>Kiki State</b> (sympathetic hyperarousal, acute star spikes and particle turbulence).</em>
+  <br><em>Left: <b>Bouba State</b> (parasympathetic calm, bulbous smooth lobes). Center: <b>Dynamic Morphing</b> (continuous real-time topological morphing). Right: <b>Kiki State</b> (sympathetic hyperarousal, acute star spikes and particle turbulence).</em>
 </p>
 
 PulseEngine translates autonomic tone across this continuum:

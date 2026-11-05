@@ -30,18 +30,22 @@ Built following professional audio production paradigms, it provides a **Virtual
 4. **Companion Procedural Geometry ([VolumetricSDF](https://github.com/federicocolombo12/VolumetricSDF))**: Seamlessly pairs with our companion package to sculpt dynamic CSG implicit geometry, bounded modifier volumes, and 128³ GPU voxel grids.
 
 <p align="center">
-  <a href="https://github.com/federicocolombo12/PulseEngine/raw/main/Documentation~/images/demo_raw.mp4">
-    <img src="Documentation~/images/demo_overview_preview.gif" width="100%" alt="PulseEngine Live In-Editor Demo Walkthrough" />
+  <a href="https://github.com/federicocolombo12/PulseEngine/raw/main/Documentation~/images/clinical_telemetry_loop.mp4">
+    <img src="Documentation~/images/clinical_telemetry_preview.gif" width="100%" alt="PulseEngine Clinical Biofeedback Showcase - Real-Time Telemetry & Parameter Variation" />
   </a>
   <br>
-  <b>🎬 <a href="https://github.com/federicocolombo12/PulseEngine/raw/main/Documentation~/images/demo_raw.mp4">Watch Full 1080p In-Editor Video Walkthrough (75s)</a></b>
+  <b>🎬 <a href="https://github.com/federicocolombo12/PulseEngine/raw/main/Documentation~/images/clinical_telemetry_loop.mp4">Watch Full 1080p Biofeedback Telemetry Walkthrough (36s MP4)</a></b>
   <br>
-  <em>Live demonstration of the Virtual DAW Mixer console, multi-channel telemetry routing, real-time OLED oscilloscopes, and GPU particle swarm voxelization.</em>
+  <em>Live demonstration of continuous telemetry variation: autonomic down-regulation sweep (Heart Rate 137 → 61 BPM, HRV RMSSD 13 → 82 ms, SpO2 96% → 99%) driving real-time Bouba/Kiki morphology, rotational kinematics, and VFX particle swarm dynamics.</em>
 </p>
 
 <p align="center">
-  <img src="Documentation~/images/csg_modeling_demo.gif" width="48%" alt="CSG Procedural Modeling" />
+  <a href="https://github.com/federicocolombo12/PulseEngine/raw/main/Documentation~/images/demo_raw.mp4">
+    <img src="Documentation~/images/demo_overview_preview.gif" width="48%" alt="Virtual DAW Mixer In-Editor Walkthrough" />
+  </a>
   <img src="Documentation~/images/vfx_swarm_adhesion.gif" width="48%" alt="VFX Swarm Adhesion" />
+  <br>
+  <em>Left: Virtual DAW Mixer console & fader session. Right: GPU particle swarm adhering to modulated SDF volume.</em>
 </p>
 
 ---

@@ -12,8 +12,12 @@ Bluetooth Low Energy (BLE) and Wi-Fi UDP streams frequently transmit telemetry p
 ### The Solution: Continuous Phase Integration
 `DataStreamMetronome` reads continuous physical rates (e.g., `heart_rate` in BPM) from `DataStreamRegistry` and integrates mathematical phase continuously:
 
-$$\Delta \phi = \frac{\text{BPM}}{60} \cdot \Delta t$$
-$$\phi_t = (\phi_{t-1} + \Delta \phi) \pmod{1.0}$$
+$$
+\begin{aligned}
+\Delta \phi &= \frac{\text{BPM}}{60} \cdot \Delta t \\
+\phi_t &= (\phi_{t-1} + \Delta \phi) \pmod{1.0}
+\end{aligned}
+$$
 
 When the phase $\phi_t$ completes a cycle ($0.0 \to 1.0$), the metronome fires a clean, mathematically perfect pulse trigger (`pulseTriggered`), completely decoupling visual pacing from network delivery lag.
 
@@ -33,7 +37,10 @@ Discrete triggers (such as a heartbeat, footstep, or MIDI note-on) often need to
 
 `DataStreamDecayTrigger` listens for a trigger and instantly ramps its output to $1.0$, then decays exponentially toward zero:
 
-$$V_t = V_{t-1} \cdot e^{-\lambda \Delta t}$$
+$$
+V_t = V_{t-1} \cdot e^{-\lambda \Delta t}
+$$
+
 where $\lambda$ is the decay speed constant.
 
 ### Inspector Properties

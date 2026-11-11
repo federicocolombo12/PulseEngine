@@ -31,12 +31,21 @@ Every telemetry stream is encapsulated in a `DataStreamChannel` object. Because 
 
 #### 1. Linear Range Mapping
 Given raw input $x$, input minimum $x_{\min}$, and input maximum $x_{\max}$:
-$$x_{\text{clamped}} = \text{clamp}(x, x_{\min}, x_{\max})$$
-$$x_{\text{norm}} = \frac{x_{\text{clamped}} - x_{\min}}{x_{\max} - x_{\min}}$$
+
+$$
+\begin{aligned}
+x_{\text{clamped}} &= \text{clamp}(x, x_{\min}, x_{\max}) \\
+x_{\text{norm}} &= \frac{x_{\text{clamped}} - x_{\min}}{x_{\max} - x_{\min}}
+\end{aligned}
+$$
 
 #### 2. Temporal Smoothing (Exponential Moving Average)
 To eliminate sensor noise and high-frequency discretization artifacts:
-$$y_t = y_{t-1} + (x_{\text{norm}} - y_{t-1}) \cdot \left(1 - e^{-\frac{\Delta t}{\tau}}\right)$$
+
+$$
+y_t = y_{t-1} + (x_{\text{norm}} - y_{t-1}) \cdot \left(1 - e^{-\frac{\Delta t}{\tau}}\right)
+$$
+
 where $\tau$ is the smoothing time constant configurable in the DAW Mixer fader strip.
 
 ---
